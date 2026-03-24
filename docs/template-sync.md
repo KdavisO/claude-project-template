@@ -40,8 +40,10 @@
 
 1. GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
 2. 以下の権限で新しいトークンを作成:
-   - **Repository access**: テンプレートリポジトリ（`claude-project-template`）を含める
-   - **Permissions**: Contents (Read-only)
+   - **Repository access**: テンプレートリポジトリ（`claude-project-template`）**と同期先（ダウンストリーム）リポジトリ**を含める
+   - **Permissions**:
+     - Contents: Read and write
+     - Pull requests: Read and write
 3. トークンをコピー
 
 ### 2. ダウンストリームリポジトリにシークレットを追加
