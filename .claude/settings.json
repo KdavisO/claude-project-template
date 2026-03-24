@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(npx *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git branch*)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git push*)",
+      "Bash(gh issue *)",
+      "Bash(gh issue:*)",
+      "Bash(gh pr *)",
+      "Bash(gh pr:*)",
+      "Bash(gh label *)",
+      "Bash(gh label:*)",
+      "Bash(gh api repos/*/pulls/*/comments*)",
+      "Bash(gh api repos/*/pulls/*/reviews*)",
+      "Bash(gh api repos/*/pulls/*/requested_reviewers*)",
+      "Bash(gh api repos/*/issues/*/comments*)",
+      "Bash(gh api --paginate repos/*/pulls/*/comments*)",
+      "Bash(gh api --paginate repos/*/pulls/*/reviews*)",
+      "Bash(gh api --paginate repos/*/pulls/*/requested_reviewers*)",
+      "Bash(gh api --paginate repos/*/issues/*/comments*)",
+      "Bash(gh run list*)",
+      "Bash(gh run view*)",
+      "Bash(gh run watch*)",
+      "Bash(gh run rerun*)",
+      "Edit",
+      "Write",
+      "Update"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git checkout -- *)",
+      "Bash(git clean -f*)",
+      "Bash(git branch -D*)",
+      "Bash(sudo *)"
+    ]
+  }
+}
