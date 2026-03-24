@@ -62,7 +62,7 @@ gh secret set TEMPLATE_SYNC_TOKEN --body "<PAT>"
 ### 4. 動作確認
 
 ```bash
-gh workflow run template-sync
+gh workflow run template-sync.yml
 ```
 
 実行後、テンプレートとの差分があればPRが自動作成される。
@@ -79,7 +79,7 @@ gh workflow run template-sync
 ### 手動での即時同期
 
 ```bash
-gh workflow run template-sync
+gh workflow run template-sync.yml
 ```
 
 ### 除外ファイルの変更
@@ -96,8 +96,14 @@ gh workflow run template-sync
 同期PRで競合が発生した場合:
 
 1. PRのブランチをローカルにチェックアウト
-2. `git merge main` で競合を解決
-3. 解決結果をプッシュしてPRをマージ
+2. リモートの `main` を取得してからマージする
+
+   ```bash
+   git fetch origin main
+   git merge origin/main
+   ```
+
+3. 競合を解決し、結果をプッシュしてPRをマージ
 
 頻繁に競合するファイルは `.templatesyncignore` への追加を検討する。
 
