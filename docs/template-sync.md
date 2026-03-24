@@ -4,7 +4,7 @@
 
 ## 採用方式: actions-template-sync
 
-[actions-template-sync](https://github.com/AndreasAugworksGitHub/actions-template-sync) を使用し、テンプレートの変更をPRとして自動配信する。
+[actions-template-sync](https://github.com/AndreasAugustin/actions-template-sync) を使用し、テンプレートの変更をPRとして自動配信する。
 
 ### 方式選定の比較
 

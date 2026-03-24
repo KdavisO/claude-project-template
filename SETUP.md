@@ -38,6 +38,6 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 5. 必要に応じて `skills/` にプロジェクト固有のスキルを追加
 6. テンプレート同期を有効化（[docs/template-sync.md](docs/template-sync.md) 参照）:
    - `gh secret set TEMPLATE_SYNC_TOKEN` でテンプレート同期用PATを設定（必要な権限: Contents R/W, Pull requests R/W）
-   - `.templatesyncignore` にプロジェクト固有ファイルを追加
+   - `.templatesyncignore` にプロジェクト固有ファイルを追加（例: `.claude/CLAUDE.md`, `.claude/settings.json`。詳細は [docs/template-sync.md](docs/template-sync.md) の該当セクションを参照）
    - `gh workflow run template-sync` で動作確認
 7. この `SETUP.md` は書き換え完了後に削除してOK

@@ -12,7 +12,7 @@ permissions:
 jobs:
   template-sync:
     runs-on: ubuntu-latest
-    if: github.repository != 'KdavisO/claude-project-template'
+    if: github.repository != 'KdavisO/claude-project-template' && secrets.TEMPLATE_SYNC_TOKEN != ''
     steps:
       - uses: actions/checkout@v4
         with:
