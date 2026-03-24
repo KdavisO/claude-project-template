@@ -1,0 +1,10 @@
+# テンプレート同期から除外するファイル
+# プロジェクト固有のカスタマイズが含まれるファイルを列挙する
+
+# プロジェクト固有の設定
+.claude/CLAUDE.md
+.claude/settings.json
+.claude/rules/project-structure.md
+
+# セットアップガイド（テンプレート側のみ必要）
+SETUP.md
