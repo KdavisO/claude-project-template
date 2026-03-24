@@ -13,8 +13,13 @@ globs: []
 Agent:
   prompt: "Issue #XXX を実装してください。要件: ..."
   isolation: "worktree"
-  run_in_background: true
+  run_in_background: true  # 複数Issueを並列処理する場合
 ```
+
+## run_in_background の使い分け
+
+- **複数 Issue を並列処理する場合**: `run_in_background: true`（他のタスクと並行するため）
+- **単一 Issue のみの場合（`--auto` 含む）**: `run_in_background: false`（フォアグラウンドで実行し、進捗をリアルタイム表示）
 
 ## 並列実行前の確認事項
 
