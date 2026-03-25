@@ -54,7 +54,8 @@ gh repo view --json owner,name -q '.owner.login + "-" + .name'
 
 - **ポーリング中の場合**: idle カウンターファイル（`/tmp/{project}-review-{ownerRepo}-idle-{PR番号}`）を読み、空振り回数を取得（ファイルが存在しない場合は空振り0回として扱う）
 - **cronタスク**: `CronList` で稼働中のポーリングタスクを確認
-- **PR状態**: `gh pr view {PR番号} --json state -q .state` で現在のPR状態を確認
+- **PR状態**: ステータスファイルの `pr` フィールドが数値（PR番号）として存在する場合にのみ、`gh pr view {PR番号} --json state -q .state` で現在のPR状態を確認。`pr` が `null` の場合はスキップし、一覧上は `-` を表示
+- **空振り分母**: 自動フローでは `--max-idle 3` が標準。分母が異なる場合はcronタスクのコマンド文字列から `--max-idle N` をパースして表示
 - **エラー時**: ステータスファイルの `error` フィールドからエラー内容を表示
 
 ### 4. 一覧表示
@@ -93,5 +94,5 @@ gh repo view --json owner,name -q '.owner.login + "-" + .name'
 - **`polling` 以外のフェーズ**: `updated_at` が30分以上前の場合、「このフローは30分以上更新されていません。停止している可能性があります」と警告
 - **`polling` フェーズ**: 以下の優先順で生存確認を行う:
   1. idle カウンターファイルが存在する場合: その最終更新時刻が30分以上前なら警告
-  2. idle ファイルが存在しない場合: cronタスクIDファイルからタスクIDを取得し、`CronList` でタスクが稼働中か確認。稼働中でなければ警告
+  2. idle ファイルが存在しない場合: cronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）からタスクIDを取得し、`CronList` でタスクが稼働中か確認。稼働中でなければ警告
   3. いずれも確認できない場合: ステータスファイルの `updated_at` にフォールバックし、30分以上前なら警告
