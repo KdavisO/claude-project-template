@@ -11,6 +11,16 @@ globs: []
 - type: `feat`, `fix`, `refactor`, `ui`, `docs`, `chore`
 - 例: `feat/12-add-child-profile`, `fix/8-auth-redirect`
 
+## ブランチ作成手順
+
+新しいブランチを作成する前に、必ずmainを最新化する:
+
+1. `git checkout main`
+2. `git pull --ff-only origin main`
+3. `git checkout -b {type}/{issue番号}-{英語の短い説明}`
+
+※ worktree使用時は `git fetch origin main` の後に `git worktree add <path> -b {type}/{issue番号}-{英語の短い説明} origin/main` で最新のmainからブランチを作成する
+
 ## コミットメッセージ
 
 - プレフィックス必須: `feat:`, `fix:`, `refactor:`, `ui:`, `docs:`, `chore:`, `test:`
