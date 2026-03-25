@@ -16,10 +16,10 @@ globs: []
 新しいブランチを作成する前に、必ずmainを最新化する:
 
 1. `git checkout main`
-2. `git pull origin main`
-3. `git checkout -b {type}/{issue番号}-{説明}`
+2. `git pull --ff-only origin main`
+3. `git checkout -b {type}/{issue番号}-{英語の短い説明}`
 
-※ worktree使用時は `git fetch origin main` の後に `git worktree add ... origin/main` で最新のmainから作成される
+※ worktree使用時は `git fetch origin main` の後に `git worktree add <path> -b {type}/{issue番号}-{英語の短い説明} origin/main` で最新のmainからブランチを作成する
 
 ## コミットメッセージ
 
