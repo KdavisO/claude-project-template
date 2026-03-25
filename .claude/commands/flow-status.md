@@ -27,7 +27,8 @@ ls /tmp/{project}-flow-{ownerRepo}-* 2>/dev/null
   "pr": 456,
   "phase": "polling",
   "worktree": "/path/to/worktree",
-  "updated_at": "2026-03-25T00:00:00Z"
+  "updated_at": "2026-03-25T00:00:00Z",
+  "error": null
 }
 ```
 
