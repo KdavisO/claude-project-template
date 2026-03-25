@@ -282,7 +282,7 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 
 ### 3. コード修正の実施
 
-**ステータス更新**（`--auto` モード時）: ステータスファイル（`/tmp/{project}-flow-{issue番号}`）が存在する場合、`phase` を `"reviewing"` に更新し、`updated_at` を現在時刻にする。Issue番号はPR番号からPRのbodyに含まれる `Closes #XX` を解析するか、ブランチ名から `{type}/{issue番号}-...` を解析して特定する。ステータスファイルが存在しない場合はスキップする。
+**ステータス更新**（`--auto` モード時）: ステータスファイル（`/tmp/{project}-flow-{issue番号}`）が存在する場合、`phase` を `"reviewing"` に更新し、`updated_at` を現在時刻にする。Issue番号はPR番号からPRのbodyに含まれる `Closes #XX` を解析するか、ブランチ名から `{type}/{issue番号}-...` を解析して特定する。いずれの方法でもIssue番号を特定できない場合は、誤ったIssueのステータスを更新しないよう**ステータス更新処理をスキップし、警告を出力する**。ステータスファイルが存在しない場合もスキップする。
 
 対応要と判定されたコメントに対してコード修正を実行する。
 

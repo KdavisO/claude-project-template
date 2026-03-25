@@ -44,11 +44,18 @@ ls /tmp/{project}-flow-* 2>/dev/null
 
 ### 3. 補足情報の収集
 
+まず `{ownerRepo}` を取得する:
+
+```bash
+gh repo view --json owner,name -q '.owner.login + "-" + .name'
+```
+
 各フローについて、追加情報を収集する:
 
 - **ポーリング中の場合**: idle カウンターファイル（`/tmp/{project}-review-{ownerRepo}-idle-{PR番号}`）を読み、空振り回数を取得
 - **cronタスク**: `CronList` で稼働中のポーリングタスクを確認
 - **PR状態**: `gh pr view {PR番号} --json state -q .state` で現在のPR状態を確認
+- **エラー時**: ステータスファイルの `error` フィールドからエラー内容を表示
 
 ### 4. 一覧表示
 
