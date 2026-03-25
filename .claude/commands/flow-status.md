@@ -11,14 +11,16 @@ description: 実行中の自動フローの進捗状況を表示します。
 `/tmp/{project}-flow-{ownerRepo}-*` パターンでステータスファイルを検索する:
 
 ```bash
-ls /tmp/{project}-flow-{ownerRepo}-* 2>/dev/null
+find /tmp -maxdepth 1 -name '{project}-flow-{ownerRepo}-*' -type f 2>/dev/null
 ```
+
+※ マッチ0件でも正常終了する。0件の場合は手順5（フローがない場合）へ。
 
 `{project}` は**メインリポジトリのディレクトリ名**（`git rev-parse --git-common-dir` からメインリポジトリルートを辿り、その basename を使用。worktree配下でも安定して同じ値になる）。`{ownerRepo}` は `gh repo view --json owner,name -q '.owner.login + "-" + .name'` で取得。
 
 ### 2. 各フローの情報を読み取り
 
-各ステータスファイル（`/tmp/{project}-flow-{ownerRepo}-{issue番号}`）はJSON形式:
+各ステータスファイル（`/tmp/{project}-flow-{ownerRepo}-{issue番号}`）はJSON形式。JSONパースに失敗したファイルはスキップし、「ステータスファイル {ファイル名} の読み取りに失敗しました（書き込み途中の可能性）」と警告を出力する。コマンド全体は中断しない:
 
 ```json
 {
