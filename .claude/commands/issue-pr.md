@@ -53,7 +53,7 @@ Closes #{issue番号}
 
    b. リクエストが成功したか確認（`requested_reviewers` にCopilotが含まれているか）:
       ```bash
-      gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers -q '[.users[].login] | map(select(. == "copilot-pull-request-reviewer[bot]")) | length'
+      gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers -q '[.users[].login] | map(select(. == "Copilot" or . == "copilot-pull-request-reviewer[bot]")) | length'
       ```
       - 1以上 → 成功。手順7へ進む
       - 0 → リトライへ

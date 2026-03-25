@@ -310,7 +310,7 @@ Copilotに再レビューをリクエストし、成功を確認する:
 
 2. リクエストが成功したか確認（`requested_reviewers` にCopilotが含まれているか）:
    ```bash
-   gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers -q '[.users[].login] | map(select(. == "copilot-pull-request-reviewer[bot]")) | length'
+   gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers -q '[.users[].login] | map(select(. == "Copilot" or . == "copilot-pull-request-reviewer[bot]")) | length'
    ```
    - 1以上 → 成功
    - 0 → リトライへ
