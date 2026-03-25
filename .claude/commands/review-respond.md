@@ -282,6 +282,8 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 
 ### 3. コード修正の実施
 
+**ステータス更新**（`--auto` モード時）: ステータスファイル（`/tmp/{project}-flow-{issue番号}`）が存在する場合、`phase` を `"reviewing"` に更新し、`updated_at` を現在時刻にする。Issue番号はPR番号からPRのbodyに含まれる `Closes #XX` を解析するか、ブランチ名から `{type}/{issue番号}-...` を解析して特定する。ステータスファイルが存在しない場合はスキップする。
+
 対応要と判定されたコメントに対してコード修正を実行する。
 
 ### 4. 検証
@@ -313,6 +315,8 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 レビュー対応で大きな変更があった場合のみ、`gh pr edit` でPR本文を更新する。
 
 ### 9. 完了報告
+
+**ステータス更新**（`--auto` モード時）: ステータスファイルが存在する場合、`phase` を `"polling"` に戻し、`updated_at` を現在時刻にする。
 
 対応結果のサマリーを表示する:
 
