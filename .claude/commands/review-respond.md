@@ -282,6 +282,8 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 
 ### 3. コード修正の実施
 
+**ポーリング一時停止**（`--auto` モード時）: コード修正に入る前に、cronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）からタスクIDを読み取り、`CronDelete` でポーリングを停止する。これにより修正中に次のポーリングが走ることを防ぐ。タスクIDファイルが存在しない、またはタスクIDが取得できない場合はスキップする。
+
 **ステータス更新**（`--auto` モード時）: ステータスファイル（`/tmp/{project}-flow-{ownerRepo}-{issue番号}`）が存在する場合、`phase` を `"reviewing"` に更新し、`updated_at` を現在時刻にする。Issue番号はPR番号からPRのbodyに含まれる `Closes #XX` を解析するか、ブランチ名から `{type}/{issue番号}-...` を解析して特定する。いずれの方法でもIssue番号を特定できない場合は、誤ったIssueのステータスを更新しないよう**ステータス更新処理をスキップし、警告を出力する**。ステータスファイルが存在しない場合もスキップする。
 
 対応要と判定されたコメントに対してコード修正を実行する。
@@ -300,6 +302,8 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 ### 6. Copilotへの再レビューリクエスト
 
 `gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers --method POST -f reviewers[]='copilot-pull-request-reviewer[bot]'` でCopilotに再レビューをリクエストする。
+
+**ポーリング再開**（`--auto` モード時）: Copilot再レビューリクエスト完了後、`CronCreate` で新しいポーリングタスクを作成（cron: `*/5 * * * *`, prompt: `/review-respond --auto --max-idle 3`, recurring: true）。新しいタスクIDをcronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）に上書きし、idleカウンターファイルを0にリセットする。
 
 ### 7. レビューコメントへの返信
 
