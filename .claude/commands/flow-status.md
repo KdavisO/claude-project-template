@@ -2,7 +2,7 @@
 description: 実行中の自動フローの進捗状況を表示します。
 ---
 
-実行中の `/issue-start --auto` フローの進捗を一覧表示してください。
+実行中の `/issue-start --parallel --auto` フローの進捗を一覧表示してください。
 
 ## 手順
 

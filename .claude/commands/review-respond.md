@@ -316,7 +316,7 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 
 ### 9. 完了報告
 
-**ステータス更新**（`--auto` モード時）: ステータスファイルが存在する場合、`phase` を `"polling"` に戻し、`updated_at` を現在時刻にする。
+**ステータス更新**（`--auto` モード時）: 手順3のステータス更新で特定したissue番号を再利用し、そのステータスファイルが存在する場合にのみ `phase` を `"polling"` に戻し、`updated_at` を現在時刻にする。issue番号を特定できなかった場合はステータス更新をスキップする。
 
 対応結果のサマリーを表示する:
 
