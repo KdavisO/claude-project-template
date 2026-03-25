@@ -44,6 +44,8 @@
    - **Permissions**:
      - Contents: Read and write
      - Pull requests: Read and write
+     - Issues: Read and write（ラベル操作に必要）
+     - Workflows: Read and write（ワークフローファイルの同期に必要）
 3. トークンをコピー
 
 ### 2. ダウンストリームリポジトリにシークレットを追加
@@ -52,14 +54,20 @@
 gh secret set TEMPLATE_SYNC_TOKEN --body "<PAT>"
 ```
 
-### 3. ワークフローファイルの確認
+### 3. リポジトリ設定の確認
+
+ダウンストリームリポジトリの Settings → Actions → General で以下を有効化する:
+
+- **Allow GitHub Actions to create and approve pull requests**: 有効化（同期PRの自動作成に必要）
+
+### 4. ワークフローファイルの確認
 
 テンプレートから作成したリポジトリには、以下のファイルが含まれている:
 
 - `.github/workflows/template-sync.yml` — 同期ワークフロー
 - `.templatesyncignore` — 同期除外ファイルリスト
 
-### 4. 動作確認
+### 5. 動作確認
 
 ```bash
 gh workflow run template-sync.yml
