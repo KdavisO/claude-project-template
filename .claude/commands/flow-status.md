@@ -8,17 +8,17 @@ description: 実行中の自動フローの進捗状況を表示します。
 
 ### 1. ステータスファイルの収集
 
-`/tmp/{project}-flow-*` パターンでステータスファイルを検索する:
+`/tmp/{project}-flow-{ownerRepo}-*` パターンでステータスファイルを検索する:
 
 ```bash
-ls /tmp/{project}-flow-* 2>/dev/null
+ls /tmp/{project}-flow-{ownerRepo}-* 2>/dev/null
 ```
 
-`{project}` はリポジトリのディレクトリ名（`basename $(git rev-parse --show-toplevel)` 等で取得）。
+`{project}` はリポジトリのディレクトリ名（`basename $(git rev-parse --show-toplevel)` 等で取得）。`{ownerRepo}` は `gh repo view --json owner,name -q '.owner.login + "-" + .name'` で取得。
 
 ### 2. 各フローの情報を読み取り
 
-各ステータスファイル（`/tmp/{project}-flow-{issue番号}`）はJSON形式:
+各ステータスファイル（`/tmp/{project}-flow-{ownerRepo}-{issue番号}`）はJSON形式:
 
 ```json
 {
