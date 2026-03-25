@@ -13,8 +13,8 @@ CLAUDE_PIDS=""
 
 CURRENT_PID="$$"
 while :; do
-  # 親 PID を取得
-  PARENT_PID=$(ps -o ppid= -p "$CURRENT_PID" 2>/dev/null | tr -d '[:space:]')
+  # 親 PID を取得（pipefail 下で ps 失敗時にスクリプトが中断しないよう || true）
+  PARENT_PID=$(ps -o ppid= -p "$CURRENT_PID" 2>/dev/null | tr -d '[:space:]' || true)
 
   # 親が取得できない、または init(1) に到達したら終了
   if [ -z "$PARENT_PID" ] || [ "$PARENT_PID" = "1" ]; then
@@ -40,39 +40,51 @@ if [ -z "$CLAUDE_PIDS" ]; then
 fi
 
 KILLED_COUNT=0
+TARGET_PIDS=""
 
 for CLAUDE_PID in $CLAUDE_PIDS; do
-  # Claude プロセスの子シェルプロセスを取得
-  CHILD_SHELLS=$(pgrep -P "$CLAUDE_PID" -f "(bash|zsh|sh)" 2>/dev/null || true)
-
-  for CHILD_PID in $CHILD_SHELLS; do
-    # 自分自身のプロセスツリーは除外
-    if [ "$CHILD_PID" = "$$" ]; then
-      continue
-    fi
-
-    # プロセスの状態を確認（実行中のものだけ対象）
-    if kill -0 "$CHILD_PID" 2>/dev/null; then
-      # まず SIGTERM で丁寧に終了を要求
-      kill -TERM "$CHILD_PID" 2>/dev/null || true
-      # 少し待機して終了したか確認
-      sleep 0.5
-      if kill -0 "$CHILD_PID" 2>/dev/null; then
-        # まだ生きている場合は再度 SIGTERM を送る
-        kill -TERM "$CHILD_PID" 2>/dev/null || true
-        sleep 0.5
+  # Claude プロセスの子シェルプロセスを取得（実行ファイル名に厳密一致）
+  for SHELL_NAME in bash zsh sh; do
+    CHILD_SHELLS=$(pgrep -P "$CLAUDE_PID" -x "$SHELL_NAME" 2>/dev/null || true)
+    for CHILD_PID in $CHILD_SHELLS; do
+      # 自分自身のプロセスツリーは除外
+      if [ "$CHILD_PID" = "$$" ]; then
+        continue
       fi
-      # それでも生存している場合は SIGKILL で強制終了
-      if kill -0 "$CHILD_PID" 2>/dev/null; then
-        kill -KILL "$CHILD_PID" 2>/dev/null || true
-        sleep 0.1
-      fi
-      # 最終的にプロセスが存在しない場合のみカウントを増やす
-      if ! kill -0 "$CHILD_PID" 2>/dev/null; then
-        KILLED_COUNT=$((KILLED_COUNT + 1))
-      fi
-    fi
+      TARGET_PIDS="$TARGET_PIDS $CHILD_PID"
+    done
   done
+done
+
+# 対象PIDがなければ終了
+TARGET_PIDS=$(echo "$TARGET_PIDS" | tr -s ' ' | sed 's/^ //')
+if [ -z "$TARGET_PIDS" ]; then
+  echo "クリーンアップ対象のシェルプロセスはありません。"
+  exit 0
+fi
+
+# 一括で SIGTERM を送信
+for PID in $TARGET_PIDS; do
+  kill -TERM "$PID" 2>/dev/null || true
+done
+
+# 1秒待機して残存プロセスを確認
+sleep 1
+
+# 残存プロセスに SIGKILL を送信
+for PID in $TARGET_PIDS; do
+  if kill -0 "$PID" 2>/dev/null; then
+    kill -KILL "$PID" 2>/dev/null || true
+  fi
+done
+
+sleep 0.1
+
+# 終了確認・カウント
+for PID in $TARGET_PIDS; do
+  if ! kill -0 "$PID" 2>/dev/null; then
+    KILLED_COUNT=$((KILLED_COUNT + 1))
+  fi
 done
 
 if [ "$KILLED_COUNT" -gt 0 ]; then

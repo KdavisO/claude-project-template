@@ -45,7 +45,6 @@
       "Bash(gh run watch*)",
       "Bash(gh run rerun*)",
       "Bash(bash .claude/scripts/cleanup-shells.sh*)",
-      "Bash(pgrep *)",
       "Edit",
       "Write",
       "Update"
