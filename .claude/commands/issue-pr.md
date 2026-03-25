@@ -48,7 +48,7 @@ Closes #{issue番号}
 
    1. レビューリクエストを送信:
       ```bash
-      gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers --method POST -f reviewers[]='copilot-pull-request-reviewer[bot]'
+      gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers --method POST -f 'reviewers[]=copilot-pull-request-reviewer[bot]'
       ```
 
    2. リクエストが成功したか確認（`requested_reviewers` にCopilotが含まれているか）:
