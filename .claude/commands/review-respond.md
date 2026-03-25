@@ -55,7 +55,7 @@ PRのレビューコメントを取得し、対応してください。
   - 内容: 連続空振り回数（整数値のみ）
 - **cronタスクIDファイル**: `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`
   - 内容: `/loop` 作成時のcronタスクID（CronCreate の戻り値）
-  - このファイルは `/loop` 起動元（`issue-start --parallel --auto` フロー内、または手動の `/loop`）が作成する。`review-respond` は読み取りのみ
+  - 初回作成は `/loop` 起動元（`issue-start --parallel --auto` フロー内、または手動の `/loop`）が行う。`review-respond` はポーリング一時停止時に読み取り、再開時に新しいタスクIDで上書きする
 - **スコープ外Issue候補ファイル**: `/tmp/{project}-review-{ownerRepo}-deferred-{PR番号}`
   - 内容: スコープ外と判断したレビューコメントのうち、将来のIssue候補となるものをJSON Lines形式で蓄積
   - 各行のフォーマット（1行1オブジェクト）: `{"comment_id": "<comment id>" | null, "review_id": "<review id>" | null, "kind": "line_comment" | "review_body", "path": "<ファイルパス>" | null, "line": <行番号> | null | "N/A", "summary": "<改善内容の要約>"}`
@@ -282,6 +282,8 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 
 ### 3. コード修正の実施
 
+**ポーリング一時停止**（`--auto` モード時）: コード修正に入る前に、cronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）からタスクIDを読み取り、`CronDelete` でポーリングを停止する。これにより修正中に次のポーリングが走ることを防ぐ。タスクIDファイルが存在しない、またはタスクIDが取得できない場合は、`--max-idle` 停止時と同様に `CronList` から対象コマンド完全一致のタスクを特定して `CronDelete` するフォールバックを行う。それでもタスクを特定できない場合は警告を出力する。
+
 **ステータス更新**（`--auto` モード時）: ステータスファイル（`/tmp/{project}-flow-{ownerRepo}-{issue番号}`）が存在する場合、`phase` を `"reviewing"` に更新し、`updated_at` を現在時刻にする。Issue番号はPR番号からPRのbodyに含まれる `Closes #XX` を解析するか、ブランチ名から `{type}/{issue番号}-...` を解析して特定する。いずれの方法でもIssue番号を特定できない場合は、誤ったIssueのステータスを更新しないよう**ステータス更新処理をスキップし、警告を出力する**。ステータスファイルが存在しない場合もスキップする。
 
 対応要と判定されたコメントに対してコード修正を実行する。
@@ -300,6 +302,8 @@ gh api --paginate repos/{owner}/{repo}/pulls/{PR番号}/reviews | jq -s '
 ### 6. Copilotへの再レビューリクエスト
 
 `gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers --method POST -f reviewers[]='copilot-pull-request-reviewer[bot]'` でCopilotに再レビューをリクエストする。
+
+**ポーリング再開**（`--auto` モード時）: Copilot再レビューリクエスト完了後、`CronCreate` で新しいポーリングタスクを作成（cron: `*/5 * * * *`, prompt: `/review-respond --auto --max-idle 3`, recurring: true）。新しいタスクIDをcronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）に上書きし、idleカウンターファイルを0にリセットする。※ 再開後の `--max-idle` は常に3に固定される（初回実行時に異なる値が指定されていても引き継がれない）。
 
 ### 7. レビューコメントへの返信
 
