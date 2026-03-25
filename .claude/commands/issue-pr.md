@@ -46,21 +46,21 @@ Closes #{issue番号}
 
 6. PR作成後、Copilotレビューをリクエストし、成功を確認する:
 
-   a. レビューリクエストを送信:
+   1. レビューリクエストを送信:
       ```bash
       gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers --method POST -f reviewers[]='copilot-pull-request-reviewer[bot]'
       ```
 
-   b. リクエストが成功したか確認（`requested_reviewers` にCopilotが含まれているか）:
+   2. リクエストが成功したか確認（`requested_reviewers` にCopilotが含まれているか）:
       ```bash
       gh api repos/{owner}/{repo}/pulls/{PR番号}/requested_reviewers -q '[.users[].login] | map(select(. == "Copilot" or . == "copilot-pull-request-reviewer[bot]")) | length'
       ```
       - 1以上 → 成功。手順7へ進む
       - 0 → リトライへ
 
-   c. リトライ（最大3回、5秒間隔）:
-      - 上記 a → b を繰り返す
-      - 3回リトライしても `requested_reviewers` にCopilotが含まれない場合:
+   3. リトライ（最大3回、5秒間隔。初回リクエストを含めて合計4回まで試行する）:
+      - 上記 1 → 2 を繰り返す
+      - 3回リトライ（合計4回試行）しても `requested_reviewers` にCopilotが含まれない場合:
         - `--auto` モード: 「⚠ Copilotレビューリクエストの確認に失敗しました。手動でレビューをリクエストしてください」と警告を出力し、**ポーリングは開始しない**（空振りが確定しているため）
         - 通常モード: 同様の警告を出力
 
