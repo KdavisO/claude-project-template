@@ -14,7 +14,7 @@ description: 実行中の自動フローの進捗状況を表示します。
 ls /tmp/{project}-flow-{ownerRepo}-* 2>/dev/null
 ```
 
-`{project}` はリポジトリのディレクトリ名（`basename $(git rev-parse --show-toplevel)` 等で取得）。`{ownerRepo}` は `gh repo view --json owner,name -q '.owner.login + "-" + .name'` で取得。
+`{project}` は**メインリポジトリのディレクトリ名**（`git rev-parse --git-common-dir` からメインリポジトリルートを辿り、その basename を使用。worktree配下でも安定して同じ値になる）。`{ownerRepo}` は `gh repo view --json owner,name -q '.owner.login + "-" + .name'` で取得。
 
 ### 2. 各フローの情報を読み取り
 
@@ -53,9 +53,9 @@ gh repo view --json owner,name -q '.owner.login + "-" + .name'
 各フローについて、追加情報を収集する:
 
 - **ポーリング中の場合**: idle カウンターファイル（`/tmp/{project}-review-{ownerRepo}-idle-{PR番号}`）を読み、空振り回数を取得（ファイルが存在しない場合は空振り0回として扱う）
-- **cronタスク**: `CronList` で稼働中のポーリングタスクを確認
+- **cronタスク特定**: まずcronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）からタスクIDを取得し、`CronList` で該当ジョブを特定する。タスクIDファイルが存在しない場合に限り、`CronList` から「対象PR番号を含むコマンド全文が完全一致する」ジョブのみを該当タスクとして採用する
 - **PR状態**: ステータスファイルの `pr` フィールドが数値（PR番号）として存在する場合にのみ、`gh pr view {PR番号} --json state -q .state` で現在のPR状態を確認。`pr` が `null` の場合はスキップし、一覧上は `-` を表示
-- **空振り分母**: 自動フローでは `--max-idle 3` が標準。分母が異なる場合はcronタスクのコマンド文字列から `--max-idle N` をパースして表示
+- **空振り分母**: 上記で特定したcronタスクのコマンド文字列から `--max-idle N` をパースして表示。該当タスクが特定できない場合は既定値3として扱う
 - **エラー時**: ステータスファイルの `error` フィールドからエラー内容を表示
 
 ### 4. 一覧表示
