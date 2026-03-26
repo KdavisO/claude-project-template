@@ -21,11 +21,11 @@ while :; do
     break
   fi
 
-  # 親プロセスのコマンドラインを取得
-  PARENT_CMD=$(ps -o command= -p "$PARENT_PID" 2>/dev/null || true)
+  # 親プロセスの実行ファイル名を取得（command 全体ではなく comm= を見る）
+  PARENT_COMM=$(ps -o comm= -p "$PARENT_PID" 2>/dev/null | tr -d '[:space:]' || true)
 
-  # コマンドラインに "claude" を含むプロセスを Claude Code 実体とみなす
-  if printf '%s\n' "$PARENT_CMD" | grep -q "claude"; then
+  # 実行ファイル名が claude に厳密一致するプロセスのみを Claude Code 実体とみなす
+  if [ "$PARENT_COMM" = "claude" ]; then
     CLAUDE_PIDS="$PARENT_PID"
     break
   fi
