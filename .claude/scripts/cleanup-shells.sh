@@ -4,7 +4,7 @@
 #
 # Claude Code は Bash ツール経由でシェルプロセスを起動するが、
 # /clear 実行時にこれらのプロセスは自動終了されない。
-# このスクリプトは Claude Code が起動した残存シェルプロセスを安全に終了する。
+# このスクリプトは Claude Code が起動した残存シェルプロセスを SIGTERM → SIGKILL で終了する。
 
 set -euo pipefail
 
@@ -101,5 +101,5 @@ done
 if [ "$KILLED_COUNT" -gt 0 ]; then
   echo "${KILLED_COUNT} 個のバックグラウンドシェルプロセスを終了しました。"
 else
-  echo "クリーンアップ対象のシェルプロセスはありません。"
+  echo "バックグラウンドシェルプロセスを終了できませんでした。まだ残っている PID がある可能性があります。"
 fi
