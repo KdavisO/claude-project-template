@@ -10,6 +10,7 @@ set -euo pipefail
 
 # このスクリプトの祖先プロセス（PPID を遡って探索）から claude 実体のみを対象にする
 CLAUDE_PIDS=""
+ANCESTOR_PIDS="$$"
 
 CURRENT_PID="$$"
 while :; do
@@ -23,6 +24,9 @@ while :; do
 
   # 親プロセスの実行ファイル名を取得（command 全体ではなく comm= を見る）
   PARENT_COMM=$(ps -o comm= -p "$PARENT_PID" 2>/dev/null | tr -d '[:space:]' || true)
+
+  # 祖先PIDリストに追加（後でkill対象から除外するため）
+  ANCESTOR_PIDS="$ANCESTOR_PIDS $PARENT_PID"
 
   # 実行ファイル名が claude に厳密一致するプロセスのみを Claude Code 実体とみなす
   if [ "$PARENT_COMM" = "claude" ]; then
@@ -47,8 +51,15 @@ for CLAUDE_PID in $CLAUDE_PIDS; do
   for SHELL_NAME in bash zsh sh; do
     CHILD_SHELLS=$(pgrep -P "$CLAUDE_PID" -x "$SHELL_NAME" 2>/dev/null || true)
     for CHILD_PID in $CHILD_SHELLS; do
-      # 自分自身のプロセスツリーは除外
-      if [ "$CHILD_PID" = "$$" ]; then
+      # 自分自身および祖先プロセスツリーは除外
+      SKIP=false
+      for ANCESTOR in $ANCESTOR_PIDS; do
+        if [ "$CHILD_PID" = "$ANCESTOR" ]; then
+          SKIP=true
+          break
+        fi
+      done
+      if [ "$SKIP" = "true" ]; then
         continue
       fi
       TARGET_PIDS="$TARGET_PIDS $CHILD_PID"
