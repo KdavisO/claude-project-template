@@ -50,7 +50,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 ### 注意事項
 
 - `--continuous` は `--parallel --auto` との併用が必須
-- `--max-issues` のデフォルト値は3（暴走防止）
+- `--max-issues` のデフォルト値は3（暴走防止）。現在のIssueを含む総数（例: `--max-issues 3` で最大3件処理）
 - エラー発生時は連続実行を停止し、ユーザーに報告
 - 各Issue間の競合チェックは `/suggest-next` が自動で実施
 
