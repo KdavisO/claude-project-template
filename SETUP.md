@@ -42,7 +42,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 
 ### 動作概要
 
-1. 指定されたIssueを `--parallel --auto` モードで処理（実装→PR→レビュー→マージ）
+1. 指定されたIssueを `--parallel --auto` モードで処理（実装→PR→レビュー→マージ／条件によりマージをスキップ）
 2. フロー完了後、`/suggest-next` で次の候補Issueを自動選定
 3. 競合チェック（worktree・オープンPR・アサイン）を通過した候補に対して自動着手
 4. `--max-issues` の上限に達するか、候補がなくなるまで繰り返す
