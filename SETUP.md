@@ -22,8 +22,34 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.claude/rules/parallel-workflow.md`   | `docs/issue-groups.md` 参照                  | プロジェクトのIssueグループに合わせる                                            |
 | `.claude/rules/git-conventions.md`     | `{github_username}`, reviewer                | assignee/reviewer を変更                                                         |
 | `.claude/rules/project-structure.md`   | 全体                                         | プロジェクト構造に合わせて書き換え                                               |
+| `.github/release.yml`                  | カテゴリ・ラベル                             | プロジェクトのラベルに合わせてリリースノートのカテゴリを変更                     |
 
 **レビュワー名に関する注記:** `.claude/rules/git-conventions.md` ではassignee/reviewerの短縮名を、`.claude/commands/issue-pr.md` と `.claude/commands/review-respond.md` では正式名 `copilot-pull-request-reviewer[bot]` を使用しています。テンプレート展開時は、使用するレビュワーに合わせて**両方のファイル**を統一的に変更してください。
+
+## リリース・バージョン管理
+
+テンプレートにはリリースノート自動作成とセマンティックバージョニングの仕組みが含まれています。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.github/release.yml` | GitHub 自動生成リリースノートのカテゴリ設定 |
+| `.claude/commands/release.md` | `/release` コマンド（バージョンバンプ〜GitHub Release作成を一気通貫実行） |
+
+### `/release` コマンドの使い方
+
+```bash
+/release              # コミットプレフィックスから自動でバンプ種別を判定
+/release minor        # minor バンプを明示指定
+/release --dry-run    # 実行内容のプレビューのみ（変更なし）
+```
+
+### カスタマイズ
+
+- **リリースノートのカテゴリ**: `.github/release.yml` のラベルとカテゴリを編集
+- **バージョンバンプルール**: `.claude/commands/release.md` の「バージョンバンプの種別を判定」セクションを編集
+- **CHANGELOG フォーマット**: `.claude/commands/release.md` の「CHANGELOG.md を更新」セクションを編集
 
 ## skills/ ディレクトリ
 
