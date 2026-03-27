@@ -33,14 +33,14 @@ description: リリースを実行します（バージョンバンプ、CHANGEL
 
 引数で種別が指定されている場合はそれを使用する。指定がない場合は自動判定:
 
-1. 前回タグからのコミットメッセージを取得する:
+1. 前回タグからのコミットメッセージ（本文含む）を取得する:
    ```bash
-   git log {前回タグ}..HEAD --pretty=format:"%s"
+   git log {前回タグ}..HEAD --pretty=format:"%B"
    ```
    （タグがない場合は全コミットを対象にする）
 
-2. コミットメッセージのプレフィックスに基づいて判定:
-   - `BREAKING CHANGE` を含む or コミットメッセージに `!:` を含む → **major**
+2. コミットメッセージに基づいて判定:
+   - コミット本文に `BREAKING CHANGE` を含む or コミットサブジェクトに `!:` を含む → **major**
    - `feat:` が1つ以上ある → **minor**
    - それ以外（`fix:`, `refactor:`, `docs:`, `chore:` 等のみ） → **patch**
 
@@ -62,7 +62,7 @@ description: リリースを実行します（バージョンバンプ、CHANGEL
 
 ### 5. CHANGELOG.md を更新
 
-1. リポジトリルートに `CHANGELOG.md` が存在しない場合は新規作成する
+1. リポジトリルートに `CHANGELOG.md` が存在しない場合は `# Changelog` ヘッダのみで新規作成する
 2. 前回タグからのコミットを以下のカテゴリに分類する:
    - `feat:` → **Features**
    - `fix:` → **Bug Fixes**
