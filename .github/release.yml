@@ -1,4 +1,5 @@
-# GitHub 自動生成リリースノートの設定
+# GitHub 自動生成リリースノートの設定（PRラベルに基づくカテゴリ分け）
+# コミットプレフィックスに基づく分類は /release コマンドの CHANGELOG.md 生成で行われる
 # https://docs.github.com/en/repositories/releasing-on-github/automatically-generated-release-notes
 changelog:
   categories:

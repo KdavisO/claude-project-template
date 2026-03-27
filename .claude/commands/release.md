@@ -18,7 +18,7 @@ description: リリースを実行します（バージョンバンプ、CHANGEL
 
 1. 現在のブランチが `main` であることを確認する（main以外ではリリース禁止）
 2. ワーキングツリーがクリーンであることを確認する（未コミットの変更がある場合はエラー）
-3. `git pull origin main` でリモートと同期する
+3. `git pull --ff-only origin main` でリモートと同期する
 
 ### 2. 現在のバージョンを取得
 
@@ -107,9 +107,9 @@ description: リリースを実行します（バージョンバンプ、CHANGEL
 
 1. `gh release create` でリリースを作成する:
    ```bash
-   gh release create v{version} --title "v{version}" --notes-from-tag
+   gh release create v{version} --title "v{version}" --generate-notes
    ```
-   - `--notes-from-tag` により `.github/release.yml` の設定に基づいてリリースノートが自動生成される
+   - `--generate-notes` により `.github/release.yml` の設定に基づいてリリースノートが自動生成される（必要に応じて `--notes-start-tag` で開始タグを指定する）
    - GitHub が自動生成するリリースノートが不十分な場合（タグ間のPRが取得できない等）は、CHANGELOG.md の該当バージョンのエントリをリリースノートとして使用する:
      ```bash
      gh release create v{version} --title "v{version}" --notes "{CHANGELOGの該当エントリ}"
