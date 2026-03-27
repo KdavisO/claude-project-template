@@ -13,7 +13,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | ファイル                       | 書き換え箇所                                 | 説明                                                                             |
 | ------------------------------ | -------------------------------------------- | -------------------------------------------------------------------------------- |
 | `.claude/CLAUDE.md`                    | 全体                                         | プロジェクト概要・技術スタック・重要ファイル                                     |
-| `.claude/settings.json`                | `Bash(pnpm *)` 等                            | パッケージマネージャに合わせて許可コマンド変更                                   |
+| `.claude/settings.json`                | `Bash(pnpm *)` 等、`env` セクション          | パッケージマネージャに合わせて許可コマンド変更、Agent Teams有効化設定             |
 | `.claude/commands/issue-create.md`     | ラベル候補                                   | プロジェクトのラベル分類に合わせる                                               |
 | `.claude/commands/issue-start.md`      | `{project}-` プレフィックス                  | プロジェクト名に変更（worktreeディレクトリ名）                                   |
 | `.claude/commands/issue-pr.md`         | `{project}-review-` 一時ファイルパス         | プロジェクト名に変更                                                             |
@@ -78,6 +78,56 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 - **リリースノートのカテゴリ**: `.github/release.yml` のラベルとカテゴリを編集
 - **バージョンバンプルール**: `.claude/commands/release.md` の「バージョンバンプの種別を判定」セクションを編集
 - **CHANGELOG フォーマット**: `.claude/commands/release.md` の「CHANGELOG.md を更新」セクションを編集
+
+## Agent Teams（実験的機能）
+
+テンプレートには Agent Teams の有効化設定とガイドラインが含まれています。
+
+### 概要
+
+Agent Teams は複数のチームメイト（専門的な役割を持つエージェント）が協調してタスクを遂行する実験的機能です。従来のサブエージェント + worktree パターンに加え、相互依存のあるタスクの並列実行やレビューコメントの観点別分担処理が可能になります。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.claude/settings.json` | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 環境変数の設定 |
+| `.claude/rules/agent-teams.md` | Agent Teams の利用ガイドライン（サブエージェントとの使い分け） |
+| `.claude/rules/parallel-workflow.md` | Agent Teams パターンの追加セクション |
+| `.claude/commands/review-respond.md` | `--team` フラグによる Agent Teams モード |
+
+### セットアップ
+
+1. `.claude/settings.json` に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が設定済み（テンプレートに含まれる）
+2. 無効化する場合は `.claude/settings.json` の `env` セクションから該当行を削除
+
+### カスタマイズ
+
+- **チームメイトの役割**: `.claude/rules/agent-teams.md` のチームメイト作成例を編集
+- **レビュー分担の閾値**: `.claude/commands/review-respond.md` の「5件以上」の閾値を調整
+- **表示モード**: `.claude/settings.json` に `"teammateMode": "auto"` / `"in-process"` / `"tmux"` を追加
+- **並列パターン**: `.claude/rules/parallel-workflow.md` の Agent Teams パターンを編集
+
+### 使い方の例
+
+```bash
+# レビュー対応でAgent Teamsを使用
+/review-respond --team 123
+
+# 自動モードとAgent Teamsの併用
+/review-respond --auto --team
+
+# 手動でAgent Teamsを作成（任意のタスク）
+# プロンプトで直接リクエスト:
+# 「3つのチームメイトを作成して、コード品質・セキュリティ・テストの観点でレビューしてください」
+```
+
+### 注意事項
+
+- Agent Teams は実験的機能であり、動作が不安定な場合があります
+- 1セッションにつき1チームのみ作成可能
+- セッション復元（`/resume`）でチームメイトは復元されません
+- 詳細は `.claude/rules/agent-teams.md` を参照
 
 ## skills/ ディレクトリ
 
