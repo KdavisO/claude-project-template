@@ -19,6 +19,8 @@ description: 次に着手すべきIssue候補を提案します。
 gh issue list --state open --json number,title,body,labels,assignees --limit 100
 ```
 
+- オープンIssueが100件を超えるリポジトリでは、`--limit` の値を増やすか、`gh api` のページング機能を用いて十分な件数を取得する
+
 ### 2. 除外フィルタを適用
 
 以下に該当するIssueを候補から除外する:
@@ -26,7 +28,7 @@ gh issue list --state open --json number,title,body,labels,assignees --limit 100
 - **アサイン済みIssue**: `assignees` が空でないIssueを除外
 - **既存worktreeで作業中のIssue**: `git worktree list` の出力からブランチ名を解析し、`{type}/{issue番号}-` パターンに一致するIssue番号を抽出して除外
 - **オープンPRと変更ファイルが競合するIssue**: 以下の手順で判定
-  1. `gh pr list --state open --json number --limit 100` でオープンPR一覧を取得
+  1. `gh pr list --state open --json number --limit 100` でオープンPR一覧を取得（100件超の場合は `--limit` 増加またはページングで対応）
   2. 各PRについて `gh pr diff {PR番号} --name-only` で変更ファイル一覧を取得
   3. 候補Issueのタイトル・本文に含まれるファイルパスやコンポーネント名がPR変更ファイルと重複する場合に除外
      - 完全なファイルパス一致、またはディレクトリレベルでの重複（同じディレクトリ配下のファイルを変更）を検出
@@ -45,7 +47,7 @@ gh issue list --state open --json number,title,body,labels,assignees --limit 100
 
 ```
 --- 次のIssue候補 ---
-1. #{issue番号} {タイトル}（優先度: {high/medium/low/low（ラベルなし）}）
+1. #{issue番号} {タイトル}（優先度: {high/medium/low} ※ラベルなしは low と同等）
    選定理由: {競合なし、未アサイン等の簡潔な理由}
 2. ...
 3. ...
@@ -55,6 +57,6 @@ gh issue list --state open --json number,title,body,labels,assignees --limit 100
 
 ## 注意事項
 
-- 提案処理でエラーが発生した場合（GitHub API失敗等）、エラー内容を簡潔に表示する（例: 「次のIssue候補の取得に失敗しました（GitHub APIエラー）」）
+- 提案処理でエラーが発生した場合（GitHub API失敗等）、エラー内容を簡潔に表示する（例: 「次のIssue候補の取得に失敗しました（GitHub APIエラー）」）。この場合でも `/suggest-next` はベストエフォートの補助コマンドとして扱い、呼び出し元（特に `/issue-start`）のフローを中断しないこと。提案セクションの出力のみをスキップし、それ以外の処理は正常終了と同等に続行する
 - 調査モード（`research` ラベル）のIssueも候補に含める
 - このコマンドは提案のみを行い、Issue着手は行わない
