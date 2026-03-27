@@ -3,7 +3,6 @@
 
 # プロジェクト固有の設定
 .claude/CLAUDE.md
-.claude/settings.json
 .claude/rules/project-structure.md
 
 # セットアップガイド（テンプレート側のみ必要）
