@@ -26,6 +26,34 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 
 **レビュワー名に関する注記:** `.claude/rules/git-conventions.md` ではassignee/reviewerの短縮名を、`.claude/commands/issue-pr.md` と `.claude/commands/review-respond.md` では正式名 `copilot-pull-request-reviewer[bot]` を使用しています。テンプレート展開時は、使用するレビュワーに合わせて**両方のファイル**を統一的に変更してください。
 
+## 連続自動実行
+
+`/issue-start` に `--continuous` フラグを追加することで、1つのIssueが完了した後に自動で次のIssueを選定・着手できます。
+
+### 使い方
+
+```bash
+# 最大3件のIssueを連続処理（デフォルト）
+/issue-start 28 --parallel --auto --continuous
+
+# 最大5件のIssueを連続処理
+/issue-start 28 --parallel --auto --continuous --max-issues 5
+```
+
+### 動作概要
+
+1. 指定されたIssueを `--parallel --auto` モードで処理（実装→PR→レビュー→マージ）
+2. フロー完了後、`/suggest-next` で次の候補Issueを自動選定
+3. 競合チェック（worktree・オープンPR・アサイン）を通過した候補に対して自動着手
+4. `--max-issues` の上限に達するか、候補がなくなるまで繰り返す
+
+### 注意事項
+
+- `--continuous` は `--parallel --auto` との併用が必須
+- `--max-issues` のデフォルト値は3（暴走防止）
+- エラー発生時は連続実行を停止し、ユーザーに報告
+- 各Issue間の競合チェックは `/suggest-next` が自動で実施
+
 ## リリース・バージョン管理
 
 テンプレートにはリリースノート自動作成とセマンティックバージョニングの仕組みが含まれています。
