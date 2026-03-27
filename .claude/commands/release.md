@@ -85,14 +85,15 @@ description: リリースを実行します（バージョンバンプ、CHANGEL
 ...（空のカテゴリは省略）
 ```
 
-### 6. コミット・タグ作成
+### 6. セルフレビュー・コミット・タグ作成
 
-1. CHANGELOG.md の変更をコミットする:
+1. `git add CHANGELOG.md` でステージングし、`git diff --staged` で差分を確認する
+2. git-conventions.md の「コミット前セルフレビュー出力フォーマット」に従いセルフレビューを実施・出力する
+3. CHANGELOG.md の変更をコミットする:
    ```bash
-   git add CHANGELOG.md
    git commit -m "chore: release v{version}"
    ```
-2. アノテーション付き git tag を作成する:
+4. アノテーション付き git tag を作成する:
    ```bash
    git tag -a v{version} -m "Release v{version}"
    ```
