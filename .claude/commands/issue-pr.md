@@ -83,8 +83,8 @@ Closes #{issue番号}
 
 `--auto` フラグが指定されている場合、PR作成・Copilotレビューリクエスト完了後に自動で以下を実行する:
 
-1. **Copilotレビューリクエストが成功した場合のみ**、`/loop 5m --skip-first /review-respond --auto --max-idle 3` を実行してレビュー対応の自動ポーリングを開始する（`--skip-first` により、PR作成直後のCI実行中の空振りを回避する）。`--team` フラグが指定されている場合は `/loop 5m --skip-first /review-respond --auto --team --max-idle 3` を実行する。手順6でリクエストが失敗した場合は、自動ポーリング開始などこの自動モード特有の後続処理（本節の手順2〜4）のみスキップし、警告メッセージを出力したうえで、PR URL表示やworktree案内など通常の処理フローはそのまま継続して終了する
-2. `gh pr view --json number -q .number` で現在のブランチに対応する `{PR番号}` を取得する
+1. `gh pr view --json number -q .number` で現在のブランチに対応する `{PR番号}` を取得する
+2. **Copilotレビューリクエストが成功した場合のみ**、`/loop 5m --skip-first /review-respond --auto --max-idle 3 {PR番号}` を実行してレビュー対応の自動ポーリングを開始する（`--skip-first` により、PR作成直後のCI実行中の空振りを回避する）。`--team` フラグが指定されている場合は `/loop 5m --skip-first /review-respond --auto --team --max-idle 3 {PR番号}` を実行する。手順6でリクエストが失敗した場合は、自動ポーリング開始などこの自動モード特有の後続処理（本節の手順3〜4）のみスキップし、警告メッセージを出力したうえで、PR URL表示やworktree案内など通常の処理フローはそのまま継続して終了する
 3. `/loop`（CronCreate）の戻り値からcronタスクIDを取得し、タスクIDファイルに保存する:
    ```bash
    echo "{タスクID}" > /tmp/{project}-review-{ownerRepo}-cron-{PR番号}
