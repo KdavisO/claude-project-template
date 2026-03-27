@@ -112,9 +112,10 @@ description: リリースを実行します（バージョンバンプ、CHANGEL
    gh release create v{version} --title "v{version}" --generate-notes
    ```
    - `--generate-notes` により `.github/release.yml` の設定に基づいてリリースノートが自動生成される（必要に応じて `--notes-start-tag` で開始タグを指定する）
-   - GitHub が自動生成するリリースノートが不十分な場合（タグ間のPRが取得できない等）は、CHANGELOG.md の該当バージョンのエントリをリリースノートとして使用する:
+   - GitHub が自動生成するリリースノートが不十分な場合（タグ間のPRが取得できない等）は、CHANGELOG.md の該当バージョンのエントリを一時ファイルに書き出し、`--notes-file` で渡す:
      ```bash
-     gh release create v{version} --title "v{version}" --notes "{CHANGELOGの該当エントリ}"
+     awk '/^## \[v{version}\]/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md > /tmp/release-notes-v{version}.md
+     gh release create v{version} --title "v{version}" --notes-file /tmp/release-notes-v{version}.md
      ```
 
 ### 9. 完了メッセージ
