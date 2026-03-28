@@ -160,7 +160,11 @@ Claude Code は `.claude/settings.json` と `.claude/settings.local.json` の設
 1. `settings.json` のうち、テンプレートにない独自の設定を特定する
 2. 独自の設定を `.claude/settings.local.json` に移動する
 3. `settings.json` をテンプレートの内容で上書きする（次回の template-sync PR で自動的に行われる）
-4. `.claude/settings.local.json` が `.gitignore` に含まれていることを確認する
+4. `.claude/settings.local.json` をバージョン管理から除外するため、プロジェクトの `.gitignore`（または同等の ignore 設定ファイル）に次の行が含まれていることを確認する:
+
+   ```gitignore
+   .claude/settings.local.json
+   ```
 
 ## 既存プロジェクトへの導入
 
