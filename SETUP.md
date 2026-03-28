@@ -79,6 +79,45 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 - **バージョンバンプルール**: `.claude/commands/release.md` の「バージョンバンプの種別を判定」セクションを編集
 - **CHANGELOG フォーマット**: `.claude/commands/release.md` の「CHANGELOG.md を更新」セクションを編集
 
+## プロジェクト巡回（`/patrol`）
+
+テンプレートにはプロジェクトの改善点を自動検出するための巡回コマンドが含まれています。
+
+### 概要
+
+`/patrol` はコードベース、PR、Issue、ドキュメントを巡回・分析し、改善点やバグの可能性を検出してIssue候補として提案します。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.claude/commands/patrol.md` | `/patrol` コマンド定義（巡回フロー・出力フォーマット） |
+
+### 巡回対象
+
+| 対象 | 説明 |
+| --- | --- |
+| `code` | TODOコメント、非推奨API、セキュリティリスク、パフォーマンス改善点、エラーハンドリング不備 |
+| `pr` | 長期間オープンPR、マージ済みPRの残タスク・フォローアップ |
+| `issue` | 長期間オープンのIssue、クローズ済みバグの再発兆候 |
+| `docs` | CLAUDE.md・rules・commands とコードの乖離、SETUP.md の記載漏れ |
+
+### 使い方
+
+```bash
+/patrol              # すべての巡回対象を実行
+/patrol code pr      # コードとPRのみ巡回
+/patrol docs         # ドキュメントのみ巡回
+/patrol --team       # Agent Teamsモードですべて巡回（巡回対象ごとにチームメイトを並列分担）
+/patrol code pr --team  # Agent Teamsモードでコード・PRを巡回
+```
+
+### カスタマイズ
+
+- **巡回観点の追加・変更**: `.claude/commands/patrol.md` の各巡回セクションを編集
+- **出力フォーマット**: `.claude/commands/patrol.md` の「結果の出力フォーマット」セクションを編集
+- **コード巡回の対象拡張子**: `.claude/commands/patrol.md` の `grep` コマンドの `--include` オプションをプロジェクトの技術スタックに合わせて調整
+
 ## Agent Teams（実験的機能）
 
 テンプレートには Agent Teams の有効化設定とガイドラインが含まれています。
