@@ -97,7 +97,7 @@ Agent Teams は Claude Code の実験的機能で、リード（メインセッ�
 レビューコメントが多い場合（目安: 5件以上）、`--team` フラグで Agent Teams モードを有効化できる。
 
 - コメントを観点別に分類し、チームメイトに分担して対応
-- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない場合はフォールバックとして従来の逐次処理を使用
+- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない場合（未設定を含む）はフォールバックとして従来の逐次処理を使用
 
 ### `/patrol` での活用
 
@@ -105,7 +105,7 @@ Agent Teams は Claude Code の実験的機能で、リード（メインセッ�
 
 - 巡回対象（コード、PR、Issue、ドキュメント）ごとにチームメイトを作成し、並列分担で深い分析を実施
 - 巡回対象が1つのみの場合はチームメイト作成のオーバーヘッドを避け、逐次処理を使用
-- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない場合はフォールバックとして従来の逐次処理を使用
+- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない場合（未設定を含む）はフォールバックとして従来の逐次処理を使用
 
 ### `/parallel-suggest` での活用
 
