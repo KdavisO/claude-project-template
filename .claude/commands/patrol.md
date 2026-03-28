@@ -142,7 +142,7 @@ gh issue list --state open --json number,title,body,labels --limit 100
    - **コード巡回担当**: TODOコメント、非推奨API、セキュリティリスク、パフォーマンス改善点を分析
    - **PR巡回担当**: オープンPR・最近マージされたPRの残タスク・フォローアップを検出
    - **Issue巡回担当**: 長期間オープンのIssue、再発兆候の検出
-   - **ドキュメント巡回担当**: CLAUDE.md・rules・commands・SETUP.mdとコードの乖離を検出
+   - **ドキュメント巡回担当**: CLAUDE.md・rules・commands とコードの乖離を検出（SETUP.md が存在する場合はその整合性も確認）
 3. 各チームメイトが独立コンテキストで深く分析し、結果を返す
 4. リードが全チームメイトの結果を統合して「結果の出力フォーマット」に従い出力
 
