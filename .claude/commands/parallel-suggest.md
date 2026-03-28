@@ -31,11 +31,13 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 
 ### 2. 領域マップの参照
 
-`docs/issue-groups.md` を読み込み、以下の情報を把握する:
+`docs/issue-groups.md` が存在する場合は読み込み、以下の情報を把握する:
 
 - 各Issueが属するグループと変更領域
 - Issue間の依存関係
 - 競合リスクが高いファイル
+
+`docs/issue-groups.md` が存在しない場合は、この手順をスキップする。手順4の並列実行可能セット選定では、各Issueの変更対象ファイルを推測して独立性を判断する。
 
 ### 3. フィルタリング
 
@@ -96,3 +98,101 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 - 各セットに独立性の根拠を必ず記載する
 - `docs/issue-groups.md` に既存の推奨パターンがある場合は優先的に参照する
 - セット内のIssueが `docs/issue-groups.md` に記載されていない場合は、変更対象ファイルを推測して独立性を判断する
+
+### 6. 実行確認と開始
+
+提案を表示した後、ユーザーに確認を求める:
+
+```
+開始するセットを選択してください（例: 1）。`none` でスキップ。
+```
+
+- ユーザーがセット番号を指定した場合、選択されたセットのIssueを並列実行する
+- `none` の場合は提案表示のみで終了する
+
+#### Agent Teams + worktree 方式（デフォルト）
+
+`.claude/settings.json` の `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている場合、Agent Teams + worktree のハイブリッド方式で並列実行を開始する。
+
+> `/patrol` や `/review-respond` と異なり `--team` フラグは不要。並列実行の開始がこのコマンドの主目的であるため、環境変数の有無のみで判定する。
+
+**`{project}` の導出方法**: メインリポジトリのディレクトリ名を使用する（`basename $(git rev-parse --show-toplevel)`）。
+
+**`{ownerRepo}` の導出方法**: `gh repo view --json owner,name -q '.owner.login + "-" + .name'` で取得する。
+
+**手順:**
+
+1. 選択されたセット内の各Issueの情報を事前取得する:
+   - `gh issue view {issue番号} --json title,body,labels` で各Issueの詳細を取得
+   - Issueのラベルに基づきブランチ種別 `{type}` を決定する（`issue-start.md` の共通手順3と同じルール）
+2. `TeamCreate` でチームを作成する（チーム名: `parallel-issues`）
+3. 各Issueに対してチームメイトを `Agent` ツールで作成する:
+   - `name`: `issue-{issue番号}`（例: `issue-123`）
+   - `team_name`: `parallel-issues`
+   - `subagent_type`: `general-purpose`（ファイル編集・Bash実行が必要なため）
+   - 手順1で取得したIssue内容をチームメイトへの指示に埋め込む（各チームメイトが個別に `gh issue view` を実行しなくてよいようにする）
+4. 各チームメイトの進捗を監視し、全員の完了を待つ
+5. 全チームメイト完了後、`SendMessage` で各チームメイトに `shutdown_request` を送信してチームを終了する
+6. 全チームメイトの結果を統合して完了サマリーを出力する:
+   ```
+   === 並列実行 完了サマリー ===
+   | Issue | ブランチ | PR | 状態 |
+   |-------|----------|-----|------|
+   | #XXX  | feat/... | #NN | 完了 |
+   | #YYY  | fix/...  | #MM | 完了 |
+   ...
+   ===========================
+   ```
+
+**チームメイトへの指示テンプレート:**
+
+```
+Issue #{issue番号}「{Issueタイトル}」を実装してください。
+
+## Issue内容
+{リードが事前取得したIssue内容}
+
+## 作業手順
+1. worktree を作成して移動:
+   git fetch origin main
+   git worktree add ../{project}-{type}-{issue番号} -b {type}/{issue番号}-{説明} origin/main
+   cd ../{project}-{type}-{issue番号}
+
+2. ステータスファイルを作成（/flow-status による進捗確認用）:
+   printf '{"issue":{issue番号},"branch":"{ブランチ名}","pr":null,"phase":"implementing","worktree":"{worktreeの絶対パス}","updated_at":"%s","error":null}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/{project}-flow-{ownerRepo}-{issue番号}
+
+3. 依存関係のインストール（package.json がある場合）:
+   pnpm install
+
+4. Issue要件に基づいて実装
+
+5. セルフレビュー・コミット（git-conventions.md に従う）
+
+6. PR作成:
+   - gh pr create で Closes #{issue番号} を含める
+   - ステータスファイルを更新: phase を "pr-created" に、pr フィールドにPR番号を設定
+
+7. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧を含める）
+
+## 注意事項
+- 必ず worktree 内で作業すること（元のリポジトリを変更しない）
+- ブランチ命名: {type}/{issue番号}-{英語の短い説明}
+- コミットメッセージ: プレフィックス必須（feat:, fix: 等）、日本語可
+- 他のチームメイトの担当領域のファイルを変更しないこと: {他チームメイトの担当領域を列挙}
+- worktree が既に存在する場合はエラーメッセージをリードに報告すること
+```
+
+#### フォールバック（従来方式）
+
+以下の場合は Agent Teams を使用せず、従来のコマンド出力のみを表示する:
+
+- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定または `"1"` でない
+- Agent Teams の作成に失敗した場合（エラーメッセージを表示し、コマンド一覧をフォールバックとして出力）
+
+フォールバック時の出力:
+```
+以下のコマンドを各ターミナルで実行してください:
+/issue-start XXX --parallel
+/issue-start YYY --parallel
+/issue-start ZZZ --parallel
+```
