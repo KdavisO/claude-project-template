@@ -32,6 +32,7 @@
 | プロジェクト固有設定 | `.claude/CLAUDE.md` | **除外** |
 | プロジェクト固有設定（ローカル） | `.claude/settings.local.json` | **除外**（gitignored） |
 | プロジェクト構造 | `.claude/rules/project-structure.md` | **除外** |
+| gitignore | `.gitignore` | **除外**（ダウンストリーム固有） |
 | セットアップ | `SETUP.md` | **除外** |
 
 除外ファイルは `.templatesyncignore` で管理する。
@@ -160,11 +161,22 @@ Claude Code は `.claude/settings.json` と `.claude/settings.local.json` の設
 1. `settings.json` のうち、テンプレートにない独自の設定を特定する
 2. 独自の設定を `.claude/settings.local.json` に移動する
 3. `settings.json` をテンプレートの内容で上書きする（次回の template-sync PR で自動的に行われる）
-4. `.claude/settings.local.json` をバージョン管理から除外するため、プロジェクトの `.gitignore`（または同等の ignore 設定ファイル）に次の行が含まれていることを確認する:
+4. プロジェクトの `.gitignore` に以下の行が含まれていることを確認する:
 
    ```gitignore
    .claude/settings.local.json
    ```
+
+> **注意**: テンプレートには `.gitignore` を含めていない（ダウンストリームの既存 `.gitignore` を上書きしてしまうため）。上記の `.gitignore` 設定はダウンストリーム側で手動で追加すること。
+
+### `.templatesyncignore` 変更の同期タイミング
+
+actions-template-sync は**ダウンストリーム側の `.templatesyncignore`** を参照して同期対象を決定する。そのため、テンプレートで `.templatesyncignore` を変更した場合、反映には **2回の同期サイクル** が必要になる:
+
+1. **1回目の同期**: `.templatesyncignore` 自体がダウンストリームに同期される
+2. **2回目の同期**: 更新された `.templatesyncignore` に基づき、新たに同期対象となったファイル（例: `settings.json`）が同期される
+
+即座に反映したい場合は、ダウンストリームで手動同期を2回実行するか、ダウンストリームの `.templatesyncignore` を直接編集してから同期を実行する。
 
 ## 既存プロジェクトへの導入
 
