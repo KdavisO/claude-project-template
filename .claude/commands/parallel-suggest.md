@@ -174,24 +174,15 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 5. セルフレビュー・コミット（git-conventions.md に従う）
 
 6. PR作成・自動レビューフロー:
-   - `/issue-pr --auto {issue番号}` を実行してPRを作成する（Copilotレビューリクエスト・自動ポーリングが含まれる）
-   - `/issue-pr --auto` の成功後、ステータスファイルを更新（原子的書き換え）: 手順2で使用した STATUS_FILE / STATUS_FILE_TMP を用い、`.tmp` に書き出してから `mv` で置き換える手順で、phase を "pr-created" に、pr フィールドにPR番号を設定する
-   - Copilotレビューリクエストが成功した場合、`/issue-pr --auto` が自動でレビュー対応ポーリングを開始する。ポーリング開始後、ステータスファイルを更新: phase を "polling" に設定
-   - ポーリング完了まで待機する
+   - `/issue-pr --auto {issue番号}` を実行してPRを作成する（Copilotレビューリクエスト・レビュー対応ポーリングの「開始」までを含む）
+   - `/issue-pr --auto` の成功後、ステータスファイルを更新（原子的書き換え）: 手順2で使用した STATUS_FILE / STATUS_FILE_TMP を用い、`.tmp` に書き出してから `mv` で置き換える手順で、phase を "pr-created" に、pr フィールドにPR番号を設定し、updated_at を現在時刻に更新する
+   - Copilotレビューリクエストが成功した場合、`/issue-pr --auto` が自動で `/loop ... /review-respond --auto --max-idle 3` によるレビュー対応ポーリングを開始する。このポーリングはcronでバックグラウンド実行され、`/issue-pr --auto` 自体はポーリング完了まで同期的には待機しない
+   - ポーリング開始を確認したら、ステータスファイルを更新: phase を "polling" に設定し、updated_at を現在時刻に更新する（ここではポーリング完了を待たずに次の手順へ進む）
+   - PRマージおよびブランチ削除・worktreeクリーンアップは、`/review-respond --auto --max-idle 3` のポストアクション（手順10）で自動実行される。このフローでは追加の手動操作は行わない
 
-7. ポストアクション（ポーリングの停止理由が「未対応コメントなし」の場合のみ実行）:
-   - ステータスファイルを更新: phase を "post-action" に設定
-   - 変更ファイル・コミット一覧を事前取得（worktree削除前に必ず実行）:
-     git fetch origin main
-     git diff --name-only origin/main...HEAD
-     git log --oneline origin/main..HEAD
-   - PRマージ（CI・レビュー状態を確認後、squash merge）:
-     gh pr merge {PR番号} --squash
-   - worktreeのクリーンアップはリードが `/worktree-cleanup` で一括管理するため、ここでは行わない
+7. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧を含める）
 
-8. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧、コミット一覧を含める）
-
-9. ステータスファイルのクリーンアップ:
+8. ステータスファイルのクリーンアップ:
    - 正常終了時:
      - ステータスファイルを原子的書き換えで最終更新: phase を "completed" に、updated_at を現在時刻に設定
      - 最終更新後にステータスファイルを削除（`rm "${STATUS_FILE}"`）。`/flow-status` では completed フェーズは通常ファイル削除後に表示されない前提のため、成功時は削除して過去の実行が残り続けないようにする
