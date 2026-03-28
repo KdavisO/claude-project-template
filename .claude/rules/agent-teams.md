@@ -119,7 +119,7 @@ Agent Teams は Claude Code の実験的機能で、リード（メインセッ�
 - 各 Issue に対してチームメイトを作成し、それぞれが独立した worktree で実装・PR作成まで完結する
 - `/patrol` や `/review-respond` と異なり `--team` フラグは不要。環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている場合、セット選択後の実行がデフォルトで Agent Teams 方式となる（並列実行の開始がコマンドの主目的であるため）
 - チームメイトの `subagent_type` は `general-purpose`（worktree でのファイル編集・Bash実行が必要なため）
-- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定または `"1"` でない場合はフォールバックとして従来の `/issue-start XXX --parallel` コマンド一覧を表示
+- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない場合（未設定を含む）はフォールバックとして従来の `/issue-start XXX --parallel` コマンド一覧を表示
 
 ### 並列ワークフローでの活用
 
