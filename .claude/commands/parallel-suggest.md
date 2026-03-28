@@ -175,7 +175,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 
 6. PR作成:
    - gh pr create で Closes #{issue番号} を含める
-   - ステータスファイルを更新: phase を "pr-created" に、pr フィールドにPR番号を設定
+   - ステータスファイルを更新（原子的書き換え）: 手順2で使用した STATUS_FILE / STATUS_FILE_TMP を用い、`.tmp` に書き出してから `mv` で置き換える手順で、phase を "pr-created" に、pr フィールドにPR番号を設定する
 
 7. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧を含める）
 
