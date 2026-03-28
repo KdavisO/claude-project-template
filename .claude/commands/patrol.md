@@ -126,7 +126,7 @@ gh issue list --state open --json number,title,body,labels --limit 100
 1. **CLAUDE.md とコードの乖離**: `.claude/CLAUDE.md` に記載の技術スタック・重要ファイルが実際のプロジェクト構造と一致しているか確認
 2. **rules/ の整合性**: `.claude/rules/` 配下のルールファイルが実際の運用と乖離していないか確認
 3. **commands/ の網羅性**: `.claude/commands/` 配下のコマンドファイルが、実際のコマンド一覧の管理方法（例: 各ファイル先頭の frontmatter `description`）と整合しているか確認
-4. **SETUP.md の記載漏れ**: 新しく追加されたコマンドやルールが SETUP.md の書き換え箇所一覧に反映されているか確認
+4. **SETUP.md の記載漏れ**: SETUP.md が存在する場合、新しく追加されたコマンドやルールが書き換え箇所一覧に反映されているか確認（SETUP.md はテンプレートセットアップ後に削除される想定のため、存在しない場合はスキップ）
 5. **README等の更新漏れ**: README.md がある場合、記載内容とコードの乖離を確認
 
 ## Agent Teamsモード（`--team`）
