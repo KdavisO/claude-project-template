@@ -32,10 +32,10 @@
 | プロジェクト固有設定 | `.claude/CLAUDE.md` | **除外** |
 | プロジェクト固有設定（ローカル） | `.claude/settings.local.json` | **除外**（gitignored） |
 | プロジェクト構造 | `.claude/rules/project-structure.md` | **除外** |
-| gitignore | `.gitignore` | **除外**（ダウンストリーム固有） |
+| gitignore | `.gitignore` | **除外**（※ダウンストリーム側の `.templatesyncignore` に指定されている場合のみ） |
 | セットアップ | `SETUP.md` | **除外** |
 
-除外ファイルは `.templatesyncignore` で管理する。
+除外ファイルはダウンストリーム側の `.templatesyncignore` で管理する。テンプレート側の `.templatesyncignore` は新規プロジェクト作成時の初期値としてコピーされるが、その後テンプレートで変更してもダウンストリームには同期されない（後述の「`.templatesyncignore` の扱い」を参照）。
 
 ## セットアップ手順
 
@@ -169,14 +169,24 @@ Claude Code は `.claude/settings.json` と `.claude/settings.local.json` の設
 
 > **注意**: テンプレートには `.gitignore` を含めていない（ダウンストリームの既存 `.gitignore` を上書きしてしまうため）。上記の `.gitignore` 設定はダウンストリーム側で手動で追加すること。
 
-### `.templatesyncignore` 変更の同期タイミング
+### `.templatesyncignore` の扱い
 
-actions-template-sync は**ダウンストリーム側の `.templatesyncignore`** を参照して同期対象を決定する。そのため、テンプレートで `.templatesyncignore` を変更した場合、反映には **2回の同期サイクル** が必要になる:
+actions-template-sync v2 は、同期時に**ダウンストリーム側の `.templatesyncignore` を常に復元・保持**する。そのため、テンプレートリポジトリ内の `.templatesyncignore` を変更しても、その変更は同期PRを通じてダウンストリームには配布されない。
 
-1. **1回目の同期**: `.templatesyncignore` 自体がダウンストリームに同期される
-2. **2回目の同期**: 更新された `.templatesyncignore` に基づき、新たに同期対象となったファイル（例: `settings.json`）が同期される
+この前提から、`.templatesyncignore` に関しては次のように運用する:
 
-即座に反映したい場合は、ダウンストリームで手動同期を2回実行するか、ダウンストリームの `.templatesyncignore` を直接編集してから同期を実行する。
+- **新規プロジェクト作成時**: テンプレートからリポジトリを作成したタイミングでの `.templatesyncignore` が初期状態としてコピーされる
+- **その後の運用**: 各プロジェクトは、自身の要件に合わせてダウンストリーム側の `.templatesyncignore` を直接編集・管理する（テンプレート側の後追い更新は自動反映されない）
+- **テンプレート側の `.templatesyncignore`**: あくまで「推奨設定のサンプル」として管理し、新規プロジェクト向けの初期値と位置づける
+
+既存プロジェクトで `.templatesyncignore` の設定を変更したい場合は、**各ダウンストリームリポジトリで `.templatesyncignore` を直接編集**し、その後に同期を実行する。
+
+### 既存ダウンストリームの `.gitignore` 上書き防止
+
+テンプレートから `.gitignore` を削除しているが、既存ダウンストリームの `.templatesyncignore` には `.gitignore` が含まれていない可能性がある。上書き防止を確実にするため、各ダウンストリームで以下を確認すること:
+
+1. `.templatesyncignore` に `.gitignore` が含まれていることを確認（なければ追加）
+2. 同期を実行して `.gitignore` が上書きされないことを検証
 
 ## 既存プロジェクトへの導入
 
