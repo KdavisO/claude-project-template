@@ -5,5 +5,8 @@
 .claude/CLAUDE.md
 .claude/rules/project-structure.md
 
+# ダウンストリーム固有のファイル（上書き防止）
+.gitignore
+
 # セットアップガイド（テンプレート側のみ必要）
 SETUP.md
