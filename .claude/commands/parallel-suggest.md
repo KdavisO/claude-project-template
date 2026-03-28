@@ -155,16 +155,18 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 ## 作業手順
 1. worktree を作成して移動:
    git fetch origin main
-   git worktree add ../{project}-{type}-{issue番号} -b {type}/{issue番号}-{説明} origin/main
+   git worktree add ../{project}-{type}-{issue番号} -b {type}/{issue番号}-{英語の短い説明} origin/main
    cd ../{project}-{type}-{issue番号}
 
 2. ステータスファイルを作成（/flow-status による進捗確認用、原子的書き換え）:
    STATUS_FILE="/tmp/{project}-flow-{ownerRepo}-{issue番号}"
    STATUS_FILE_TMP="${STATUS_FILE}.tmp"
-   printf '{"issue":{issue番号},"branch":"{type}/{issue番号}-{説明}","pr":null,"phase":"implementing","worktree":"{worktreeの絶対パス}","updated_at":"%s","error":null}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "${STATUS_FILE_TMP}" && mv "${STATUS_FILE_TMP}" "${STATUS_FILE}"
+   printf '{"issue":{issue番号},"branch":"{type}/{issue番号}-{英語の短い説明}","pr":null,"phase":"implementing","worktree":"{worktreeの絶対パス}","updated_at":"%s","error":null}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "${STATUS_FILE_TMP}" && mv "${STATUS_FILE_TMP}" "${STATUS_FILE}"
 
-3. 依存関係のインストール（package.json がある場合）:
-   pnpm install
+3. 依存関係のインストール:
+   if [ -f package.json ]; then
+     pnpm install
+   fi
 
 4. Issue要件に基づいて実装
 
@@ -188,7 +190,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 
 以下の場合は Agent Teams を使用せず、従来のコマンド出力のみを表示する:
 
-- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定または `"1"` でない
+- `.claude/settings.json` の `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定または `"1"` でない
 - Agent Teams の作成に失敗した場合（エラーメッセージを表示し、コマンド一覧をフォールバックとして出力）
 
 フォールバック時の出力:
