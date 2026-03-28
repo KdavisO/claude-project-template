@@ -117,7 +117,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 
 > `/patrol` や `/review-respond` と異なり `--team` フラグは不要。並列実行の開始がこのコマンドの主目的であるため、環境変数の有無のみで判定する。
 
-**`{project}` の導出方法**: メインリポジトリのディレクトリ名を使用する（`basename "$(dirname "$(git rev-parse --git-common-dir)")"`）。worktree 配下でも常にメインリポジトリ名が返るため、`/flow-status` のステータスファイル命名と一致する。
+**`{project}` の導出方法**: メインリポジトリのディレクトリ名を使用する（`basename "$(dirname "$(git rev-parse --git-common-dir --path-format=absolute)")"`）。worktree 配下でも常にメインリポジトリ名が返るため、`/flow-status` のステータスファイル命名と一致する。
 
 **`{ownerRepo}` の導出方法**: `gh repo view --json owner,name -q '.owner.login + "-" + .name'` で取得する。
 
@@ -180,9 +180,12 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 7. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧を含める）
 
 8. ステータスファイルのクリーンアップ:
-   - ステータスファイルを原子的書き換えで最終更新: phase を "completed" に、updated_at を現在時刻に設定
-   - 最終更新後にステータスファイルを削除（`rm "${STATUS_FILE}"`）
-   - `/flow-status` では completed フェーズは通常ファイル削除後に表示されない前提のため、削除しないと過去の実行が残り続ける
+   - 正常終了時:
+     - ステータスファイルを原子的書き換えで最終更新: phase を "completed" に、updated_at を現在時刻に設定
+     - 最終更新後にステータスファイルを削除（`rm "${STATUS_FILE}"`）。`/flow-status` では completed フェーズは通常ファイル削除後に表示されない前提のため、成功時は削除して過去の実行が残り続けないようにする
+   - エラーで中断した場合:
+     - ステータスファイルが存在する場合は原子的書き換えで更新し、phase を "error" に、updated_at を現在時刻に設定し、可能であれば error フィールドに概要を記録する
+     - エラー時はステータスファイルを削除しない（`/flow-status` で原因確認できるようにする）
 
 ## 注意事項
 - 必ず worktree 内で作業すること（元のリポジトリを変更しない）
