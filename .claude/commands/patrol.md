@@ -131,7 +131,7 @@ gh issue list --state open --json number,title,body,labels --limit 100
 
 ## Agent Teamsモード（`--team`）
 
-> **注意**: Agent Teams は実験的機能です。`.claude/settings.json` の `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている必要があります。
+> **注意**: Agent Teams は実験的機能です。環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている必要があります（`.claude/settings.json` または `.claude/settings.local.json` の `env` セクションで設定）。
 
 `--team` フラグが指定されている場合、巡回対象ごとにチームメイトを作成して並列分担処理する。
 
@@ -156,7 +156,7 @@ gh issue list --state open --json number,title,body,labels --limit 100
 
 以下の場合は `--team` が指定されていても従来の逐次処理を使用:
 
-- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定
+- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない（未設定を含む）
 - Agent Teams の作成に失敗した場合
 - 巡回対象が1つのみの場合（例: `/patrol code --team`）— チームメイト作成のオーバーヘッドを避けるため
 

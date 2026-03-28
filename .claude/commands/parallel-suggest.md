@@ -113,9 +113,9 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 
 #### Agent Teams + worktree 方式（デフォルト）
 
-`.claude/settings.json` の `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている場合、Agent Teams + worktree のハイブリッド方式で並列実行を開始する。
+環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている場合、Agent Teams + worktree のハイブリッド方式で並列実行を開始する（`.claude/settings.json` または `.claude/settings.local.json` の `env` セクションで設定）。
 
-> `/patrol` や `/review-respond` と異なり `--team` フラグは不要。並列実行の開始がこのコマンドの主目的であるため、環境変数の有無のみで判定する。
+> `/patrol` や `/review-respond` と異なり `--team` フラグは不要。並列実行の開始がこのコマンドの主目的であるため、環境変数の値が `"1"` かどうかのみで判定する。
 
 **`{project}` の導出方法**: メインリポジトリのディレクトリ名を使用する（`basename "$(dirname "$(git rev-parse --git-common-dir --path-format=absolute)")"`）。worktree 配下でも常にメインリポジトリ名が返るため、`/flow-status` のステータスファイル命名と一致する。
 
@@ -202,7 +202,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 
 以下の場合は Agent Teams を使用せず、従来のコマンド出力のみを表示する:
 
-- `.claude/settings.json` の `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定または `"1"` でない
+- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定または `"1"` でない
 - Agent Teams の作成に失敗した場合（エラーメッセージを表示し、コマンド一覧をフォールバックとして出力）
 
 フォールバック時の出力:
