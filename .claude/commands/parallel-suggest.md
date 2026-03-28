@@ -132,7 +132,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
    - `subagent_type`: `general-purpose`（ファイル編集・Bash実行が必要なため）
    - 手順1で取得したIssue内容をチームメイトへの指示に埋め込む（各チームメイトが個別に `gh issue view` を実行しなくてよいようにする）
 4. 各チームメイトの進捗を監視し、全員の完了を待つ
-5. 全チームメイト完了後、各チームメイトに終了を指���してチームを解散する
+5. 全チームメイト完了後、各チームメイトに終了を指示してチームを解散する
 6. 全チームメイトの結果を統合して完了サマリーを出力する:
    ```
    === 並列実行 完了サマリー ===
@@ -158,8 +158,10 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
    git worktree add ../{project}-{type}-{issue番号} -b {type}/{issue番号}-{説明} origin/main
    cd ../{project}-{type}-{issue番号}
 
-2. ステータスファイルを作成（/flow-status による進捗確認用）:
-   printf '{"issue":{issue番号},"branch":"{ブランチ名}","pr":null,"phase":"implementing","worktree":"{worktreeの絶対パス}","updated_at":"%s","error":null}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/{project}-flow-{ownerRepo}-{issue番号}
+2. ステータスファイルを作成（/flow-status による進捗確認用、原子的書き換え）:
+   STATUS_FILE="/tmp/{project}-flow-{ownerRepo}-{issue番号}"
+   STATUS_FILE_TMP="${STATUS_FILE}.tmp"
+   printf '{"issue":{issue番号},"branch":"{type}/{issue番号}-{説明}","pr":null,"phase":"implementing","worktree":"{worktreeの絶対パス}","updated_at":"%s","error":null}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "${STATUS_FILE_TMP}" && mv "${STATUS_FILE_TMP}" "${STATUS_FILE}"
 
 3. 依存関係のインストール（package.json がある場合）:
    pnpm install
