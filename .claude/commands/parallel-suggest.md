@@ -115,7 +115,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 
 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている場合、Agent Teams + worktree のハイブリッド方式で並列実行を開始する（`.claude/settings.json` または `.claude/settings.local.json` の `env` セクションで設定）。
 
-> `/patrol` や `/review-respond` と異なり `--team` フラグは不要。並列実行の開始がこのコマンドの主目的であるため、環境変数の有無のみで判定する。
+> `/patrol` や `/review-respond` と異なり `--team` フラグは不要。並列実行の開始がこのコマンドの主目的であるため、環境変数の値が `"1"` かどうかのみで判定する。
 
 **`{project}` の導出方法**: メインリポジトリのディレクトリ名を使用する（`basename "$(dirname "$(git rev-parse --git-common-dir --path-format=absolute)")"`）。worktree 配下でも常にメインリポジトリ名が返るため、`/flow-status` のステータスファイル命名と一致する。
 
