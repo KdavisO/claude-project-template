@@ -122,6 +122,11 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 - **巡回観点の追加・変更**: `.claude/commands/patrol.md` の各巡回セクションを編集
 - **出力フォーマット**: `.claude/commands/patrol.md` の「結果の出力フォーマット」セクションを編集
 - **コード巡回の対象拡張子**: `.claude/commands/patrol.md` の `grep` コマンドの `--include` オプションをプロジェクトの技術スタックに合わせて調整
+- **Issue化フロー**: `.claude/commands/patrol.md` の「Issue作成の確認」セクションを編集
+
+### 出力とIssue化フロー
+
+巡回結果はカテゴリ（bug, enhancement, refactor, documentation, chore）・重要度（high/medium/low）・既存Issue重複チェック付きの一覧表として出力されます。検出された候補からIssue化するものをユーザーが選択し、`/issue-create` で個別にIssueを作成します。詳細は `.claude/commands/patrol.md` の「結果の出力フォーマット」「Issue作成の確認」セクションを参照してください。
 
 ## Agent Teams（実験的機能）
 
