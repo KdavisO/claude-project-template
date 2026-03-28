@@ -173,9 +173,12 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 
 5. セルフレビュー・コミット（git-conventions.md に従う）
 
-6. PR作成:
-   - gh pr create で Closes #{issue番号} を含める
-   - ステータスファイルを更新（原子的書き換え）: 手順2で使用した STATUS_FILE / STATUS_FILE_TMP を用い、`.tmp` に書き出してから `mv` で置き換える手順で、phase を "pr-created" に、pr フィールドにPR番号を設定する
+6. PR作成・自動レビューフロー:
+   - `/issue-pr --auto {issue番号}` を実行してPRを作成する（Copilotレビューリクエスト・レビュー対応ポーリングの「開始」までを含む）
+   - `/issue-pr --auto` の成功後、ステータスファイルを更新（原子的書き換え）: 手順2で使用した STATUS_FILE / STATUS_FILE_TMP を用い、`.tmp` に書き出してから `mv` で置き換える手順で、phase を "pr-created" に、pr フィールドにPR番号を設定し、updated_at を現在時刻に更新する
+   - Copilotレビューリクエストが成功した場合、`/issue-pr --auto` が自動で `/loop ... /review-respond --auto --max-idle 3` によるレビュー対応ポーリングを開始する。このポーリングはcronでバックグラウンド実行され、`/issue-pr --auto` 自体はポーリング完了まで同期的には待機しない
+   - ポーリング開始を確認したら、ステータスファイルを更新: phase を "polling" に設定し、updated_at を現在時刻に更新する（ここではポーリング完了を待たずに次の手順へ進む）
+   - PRマージおよびブランチ削除・worktreeクリーンアップは、`/review-respond --auto --max-idle 3` のポストアクション（手順10）で自動実行される。このフローでは追加の手動操作は行わない
 
 7. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧を含める）
 
