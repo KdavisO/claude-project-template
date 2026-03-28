@@ -49,7 +49,11 @@
       "Bash(gh run rerun*)",
       "Bash(bash .claude/scripts/cleanup-shells.sh*)",
       "Edit",
+      "Edit(.claude/rules/**)",
+      "Edit(.claude/CLAUDE.md)",
       "Write",
+      "Write(.claude/rules/**)",
+      "Write(.claude/CLAUDE.md)",
       "Update"
     ],
     "deny": [
