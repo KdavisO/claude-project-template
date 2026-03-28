@@ -101,14 +101,17 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `pr` | 長期間オープンPR、マージ済みPRの残タスク・フォローアップ |
 | `issue` | 長期間オープンのIssue、クローズ済みバグの再発兆候 |
 | `docs` | CLAUDE.md・rules・commands とコードの乖離、SETUP.md の記載漏れ |
+| `all` | すべての巡回対象をまとめて実行（引数なしと同等） |
 
 ### 使い方
 
 ```bash
 /patrol              # すべての巡回対象を実行
+/patrol all          # all トークンを指定してすべての巡回対象を実行
 /patrol code pr      # コードとPRのみ巡回
 /patrol docs         # ドキュメントのみ巡回
 /patrol --team       # Agent Teamsモードですべて巡回（巡回対象ごとにチームメイトを並列分担）
+/patrol all --team   # Agent Teamsモードで all（すべての巡回対象）を巡回
 /patrol code pr --team  # Agent Teamsモードでコード・PRを巡回
 ```
 
