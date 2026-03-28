@@ -97,7 +97,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 
 | 対象 | 説明 |
 | --- | --- |
-| `code` | TODOコメント、非推奨API、セキュリティリスク、パフォーマンス改善点、エラーハンドリング不備 |
+| `code` | TODOコメント、非推奨API、セキュリティリスク、パフォーマンス改善点、エラーハンドリングの不備 |
 | `pr` | 長期間オープンPR、マージ済みPRの残タスク・フォローアップ |
 | `issue` | 長期間オープンのIssue、クローズ済みバグの再発兆候 |
 | `docs` | CLAUDE.md・rules・commands とコードの乖離、SETUP.md の記載漏れ |
@@ -114,6 +114,8 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 /patrol all --team   # Agent Teamsモードで all（すべての巡回対象）を巡回
 /patrol code pr --team  # Agent Teamsモードでコード・PRを巡回
 ```
+
+> **注**: `--team` フラグは Agent Teams（実験的機能）の有効化が必要です。詳細は後述の「[Agent Teams（実験的機能）](#agent-teams実験的機能)」セクションを参照してください。
 
 ### カスタマイズ
 
