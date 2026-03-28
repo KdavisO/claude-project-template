@@ -7,7 +7,7 @@ globs: []
 
 ## Claude Code の `.claude/` 保護仕様
 
-- `.claude/` 配下のファイルは `Edit`/`Write` の一般許可（allowedTools）では保護がバイパスされない
+- `.claude/` 配下のファイルは `.claude/settings.json` の `permissions.allow` で `"Edit"` / `"Write"` を一般許可しても保護がバイパスされない
 - `bypassPermissions` モードでも `.claude/` への書き込みには承認プロンプトが表示される
 - **例外（保護なし）**: `.claude/commands/`, `.claude/agents/`, `.claude/skills/` は保護対象外
 
