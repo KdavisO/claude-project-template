@@ -94,7 +94,7 @@ PRのレビューコメントを取得し、対応してください。
 
 ## Agent Teamsモード（`--team`）
 
-> **注意**: Agent Teams は実験的機能です。`.claude/settings.json` の `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている必要があります。
+> **注意**: Agent Teams は実験的機能です。環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` に設定されている必要があります（`.claude/settings.json` または `.claude/settings.local.json` の `env` セクションで設定）。
 
 `--team` フラグが指定されている場合、手順1で取得した**統合後の未対応コメント**（ラインコメントおよびレビュー本文由来の項目を含む）の件数が**5件以上**であれば Agent Teams で観点別に分担処理する。5件未満の場合は従来の逐次処理にフォールバックする。
 
@@ -114,7 +114,7 @@ PRのレビューコメントを取得し、対応してください。
 以下の場合は `--team` が指定されていても従来の逐次処理を使用:
 
 - 未対応コメントが5件未満
-- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定
+- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない（未設定を含む）
 - Agent Teams の作成に失敗した場合
 
 ### `--auto` との併用
