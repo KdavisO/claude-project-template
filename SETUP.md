@@ -110,9 +110,9 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 /patrol all          # all トークンを指定してすべての巡回対象を実行
 /patrol code pr      # コードとPRのみ巡回
 /patrol docs         # ドキュメントのみ巡回
-/patrol --team       # Agent Teamsモードですべて巡回（巡回対象ごとにチームメイトを並列分担）
-/patrol all --team   # Agent Teamsモードで all（すべての巡回対象）を巡回
-/patrol code pr --team  # Agent Teamsモードでコード・PRを巡回
+/patrol --team       # Agent Teams モードですべて巡回（巡回対象ごとにチームメイトを並列分担）
+/patrol all --team   # Agent Teams モードで all（すべての巡回対象）を巡回
+/patrol code pr --team  # Agent Teams モードでコード・PRを巡回
 ```
 
 > **注**: `--team` フラグは Agent Teams（実験的機能）の有効化が必要です。詳細は後述の「[Agent Teams（実験的機能）](#agent-teams実験的機能)」セクションを参照してください。
