@@ -46,6 +46,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 - 引数で `exclude:` に指定されたIssue
 - 既にアサインされているIssue（他の開発者が作業中の可能性）
 - 既にPRが存在するIssue（PR本文に `Closes #<issue番号>` / `Fixes #<issue番号>` / `Resolves #<issue番号>` が含まれるかを、`gh pr list --search "Closes #{issue番号} OR Fixes #{issue番号} OR Resolves #{issue番号}"` で確認して除外）
+- `research` ラベルが付いたIssue（調査モード対象のため、並列実装には適さない）
 - `priority:` フィルタが指定されている場合、該当優先度未満のIssue
   - 優先度の順序: `high` > `medium` > `low`
   - 例: `priority:medium` → `low` を除外
