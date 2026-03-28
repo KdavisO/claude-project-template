@@ -116,7 +116,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 
 > `/patrol` や `/review-respond` と異なり `--team` フラグは不要。並列実行の開始がこのコマンドの主目的であるため、環境変数の有無のみで判定する。
 
-**`{project}` の導出方法**: メインリポジトリのディレクトリ名を使用する（`basename $(git rev-parse --show-toplevel)`）。
+**`{project}` の導出方法**: メインリポジトリのディレクトリ名を使用する（`basename "$(dirname "$(git rev-parse --git-common-dir)")"`）。worktree 配下でも常にメインリポジトリ名が返るため、`/flow-status` のステータスファイル命名と一致する。
 
 **`{ownerRepo}` の導出方法**: `gh repo view --json owner,name -q '.owner.login + "-" + .name'` で取得する。
 
@@ -125,14 +125,14 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 1. 選択されたセット内の各Issueの情報を事前取得する:
    - `gh issue view {issue番号} --json title,body,labels` で各Issueの詳細を取得
    - Issueのラベルに基づきブランチ種別 `{type}` を決定する（`issue-start.md` の共通手順3と同じルール）
-2. `TeamCreate` でチームを作成する（チーム名: `parallel-issues`）
-3. 各Issueに対してチームメイトを `Agent` ツールで作成する:
+2. Agent Teams で `parallel-issues` という名前のチームを作成する
+3. 各Issueに対してチームメイトを作成する:
    - `name`: `issue-{issue番号}`（例: `issue-123`）
    - `team_name`: `parallel-issues`
    - `subagent_type`: `general-purpose`（ファイル編集・Bash実行が必要なため）
    - 手順1で取得したIssue内容をチームメイトへの指示に埋め込む（各チームメイトが個別に `gh issue view` を実行しなくてよいようにする）
 4. 各チームメイトの進捗を監視し、全員の完了を待つ
-5. 全チームメイト完了後、`SendMessage` で各チームメイトに `shutdown_request` を送信してチームを終了する
+5. 全チームメイト完了後、各チームメイトに終了を指���してチームを解散する
 6. 全チームメイトの結果を統合して完了サマリーを出力する:
    ```
    === 並列実行 完了サマリー ===
