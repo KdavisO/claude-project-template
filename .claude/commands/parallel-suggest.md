@@ -202,7 +202,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 
 以下の場合は Agent Teams を使用せず、従来のコマンド出力のみを表示する:
 
-- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が未設定または `"1"` でない
+- 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない（未設定を含む）
 - Agent Teams の作成に失敗した場合（エラーメッセージを表示し、コマンド一覧をフォールバックとして出力）
 
 フォールバック時の出力:
