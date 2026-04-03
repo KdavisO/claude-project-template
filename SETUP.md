@@ -265,7 +265,7 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
 ### 有効化手順
 
 1. 上記の設定例から必要なものを選択
-2. `.claude/settings.json` の `hooks` セクションに追記（既存の `SessionEnd` 等を上書きしないよう注意）
+2. プロジェクト固有の追加設定として `.claude/settings.local.json` の `hooks` セクションに追記（テンプレート管理の `.claude/settings.json` や既存の `SessionEnd` 等を上書きしないよう注意）
 3. direnv を使用する場合は、事前に `direnv` をインストールし、シェルに hook を設定しておく
 4. direnv を使用する場合は、対象ディレクトリで `direnv allow .` を手動で実行し、信頼するディレクトリを事前に許可しておく
 5. プロジェクト固有の `.envrc` / `.env` が存在することを確認
@@ -275,7 +275,8 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
 
 - これらのフックは downstream プロジェクトの環境に依存するため、テンプレートではオプション扱い（`settings.json` には含めない）
 - direnv を使用しない環境では `CwdChanged` フックは不要
-- `.env` ファイルの直接 source は簡易的な方法であり、複雑な環境設定には direnv の使用を推奨
+- `.env` ファイルの直接 source（`. .env`）はファイル内の任意のシェルコマンドが実行されるリスクがある。信頼できる `.env` ファイルでのみ使用し、不特定のファイルを自動 source しないこと。より安全な方法として、`grep` で `KEY=VALUE` 行のみを抽出するパーサーの使用を検討すること
+- `.env` の直接 source は簡易的な方法であり、複雑な環境設定には direnv の使用を推奨
 - `env` コマンドで全環境変数を出力すると機密情報がログに残る可能性があるため、必要なキーのみを明示的に出力すること
 - フック活用のベストプラクティスは `.claude/rules/reactive-hooks.md` を参照
 
