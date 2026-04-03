@@ -217,7 +217,7 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
         "hooks": [
           {
             "type": "command",
-            "command": "direnv allow . 2>/dev/null; direnv export bash 2>/dev/null | sed 's/^export //' | while IFS='=' read -r key value; do echo \"$key=$value\"; done",
+            "command": "direnv export bash | sed 's/^export //' | while IFS='=' read -r key value; do echo \"$key=$value\"; done",
             "timeout": 10
           }
         ]
@@ -226,6 +226,8 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
   }
 }
 ```
+
+> **注意:** `direnv allow` はフック内で自動実行しないでください。事前に `direnv allow .` を手動で実行し、信頼するディレクトリを明示的に許可してください。フック内で自動実行すると、悪意ある `.envrc` が紛れた場合に任意コマンド実行に直結します。
 
 ### FileChanged の設定例（.envrc / .env 変更時のリロード）
 
@@ -240,7 +242,7 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
         "hooks": [
           {
             "type": "command",
-            "command": "direnv allow . 2>/dev/null; direnv export bash 2>/dev/null | sed 's/^export //' | while IFS='=' read -r key value; do echo \"$key=$value\"; done",
+            "command": "direnv export bash | sed 's/^export //' | while IFS='=' read -r key value; do echo \"$key=$value\"; done",
             "timeout": 10
           }
         ]
@@ -250,7 +252,7 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
         "hooks": [
           {
             "type": "command",
-            "command": "set -a && . .env && set +a && env",
+            "command": "set -a && . .env && set +a && sh -c 'for key in NODE_ENV PORT; do eval \"value=\\${$key}\"; [ -n \"$value\" ] && printf \"%s=%s\\n\" \"$key\" \"$value\"; done'",
             "timeout": 10
           }
         ]
@@ -265,13 +267,16 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
 1. 上記の設定例から必要なものを選択
 2. `.claude/settings.json` の `hooks` セクションに追記（既存の `SessionEnd` 等を上書きしないよう注意）
 3. direnv を使用する場合は、事前に `direnv` をインストールし、シェルに hook を設定しておく
-4. プロジェクト固有の `.envrc` / `.env` が存在することを確認
+4. direnv を使用する場合は、対象ディレクトリで `direnv allow .` を手動で実行し、信頼するディレクトリを事前に許可しておく
+5. プロジェクト固有の `.envrc` / `.env` が存在することを確認
+6. `.env` 変更時のフックで出力するキー名（`NODE_ENV PORT` 等）をプロジェクトで使用する環境変数に合わせて変更する
 
 ### 注意事項
 
 - これらのフックは downstream プロジェクトの環境に依存するため、テンプレートではオプション扱い（`settings.json` には含めない）
 - direnv を使用しない環境では `CwdChanged` フックは不要
 - `.env` ファイルの直接 source は簡易的な方法であり、複雑な環境設定には direnv の使用を推奨
+- `env` コマンドで全環境変数を出力すると機密情報がログに残る可能性があるため、必要なキーのみを明示的に出力すること
 - フック活用のベストプラクティスは `.claude/rules/reactive-hooks.md` を参照
 
 ## PreToolUse プロンプト強化フック（オプション）

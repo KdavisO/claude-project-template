@@ -1,3 +1,8 @@
+---
+description: CwdChanged/FileChangedフックによるリアクティブ環境設定のベストプラクティス
+globs: []
+---
+
 # リアクティブフック活用ベストプラクティス
 
 ## 概要
@@ -41,7 +46,7 @@ direnv を使わない場合は `CwdChanged` フックの代わりに、プロ�
         "hooks": [
           {
             "type": "command",
-            "command": "if [ -f .env ]; then set -a && . .env && set +a && env; fi",
+            "command": "if [ -f .env ]; then set -a && . .env && set +a && sh -c 'for key in NODE_ENV PORT; do eval \"value=\\${$key}\"; [ -n \"$value\" ] && printf \"%s=%s\\n\" \"$key\" \"$value\"; done'; fi",
             "timeout": 10
           }
         ]
