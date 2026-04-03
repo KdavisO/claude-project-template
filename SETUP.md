@@ -13,7 +13,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | ファイル                       | 書き換え箇所                                 | 説明                                                                             |
 | ------------------------------ | -------------------------------------------- | -------------------------------------------------------------------------------- |
 | `.claude/CLAUDE.md`                    | 全体                                         | プロジェクト概要・技術スタック・重要ファイル                                     |
-| `.claude/settings.json`                | `Bash(pnpm *)` 等、`env` セクション          | パッケージマネージャに合わせて許可コマンド変更、Agent Teams有効化設定             |
+| `.claude/settings.json`                | `Bash(pnpm *)` 等、`env` セクション          | パッケージマネージャに合わせて許可コマンド変更、Agent Teams有効化設定、LSPプラグイン設定 |
 | `.claude/commands/issue-create.md`     | ラベル候補                                   | プロジェクトのラベル分類に合わせる                                               |
 | `.claude/commands/issue-start.md`      | `{project}-` プレフィックス                  | プロジェクト名に変更（worktreeディレクトリ名）                                   |
 | `.claude/commands/issue-pr.md`         | `{project}-review-` 一時ファイルパス         | プロジェクト名に変更                                                             |
@@ -195,6 +195,53 @@ Agent Teams は複数のチームメイト（専門的な役割を持つエー�
 ## skills/ ディレクトリ
 
 `skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。テンプレートでは `.gitkeep` のみが含まれています。
+
+## LSP プラグイン
+
+テンプレートには Claude Code の LSP（Language Server Protocol）プラグインの有効化設定が含まれています。
+
+### 概要
+
+LSP プラグインを有効にすると、Claude Code がテキストベースの grep 検索に代わり、IDE と同等のコードインテリジェンス（定義ジャンプ、参照検索、リアルタイム診断等）を利用できるようになります。
+
+### 含まれる設定
+
+| ファイル | 設定内容 |
+| --- | --- |
+| `.claude/settings.json` | `env` セクションの `ENABLE_LSP_TOOL: "1"` |
+
+### プラグインのインストール
+
+LSP プラグインはコミュニティマーケットプレイスから入手できます:
+
+```bash
+claude mcp add --transport stdio lsp -- npx @anthropic-ai/claude-code-lsp@latest
+```
+
+参考: [Piebald-AI/claude-code-lsps](https://github.com/nicobailon/claude-code-lsps)
+
+### 対応言語
+
+- TypeScript / JavaScript
+- Python
+- Ruby
+- Go
+- Rust
+- Java
+- C / C++
+- その他、Language Server が利用可能な言語
+
+### 無効化する場合
+
+`.claude/settings.json` の `env` セクションから `ENABLE_LSP_TOOL` を削除するか、値を `"0"` に変更してください:
+
+```json
+{
+  "env": {
+    "ENABLE_LSP_TOOL": "0"
+  }
+}
+```
 
 ## 書き換え手順
 
