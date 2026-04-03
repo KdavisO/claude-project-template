@@ -1,0 +1,17 @@
+# Claude Code Docker 自律実行環境
+#
+# 使用方法:
+#   docker compose run --rm claude "Issue #123 を実装してください"
+#
+# 環境変数:
+#   ANTHROPIC_API_KEY: Anthropic API キー（必須）
+
+services:
+  claude:
+    build: .
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - .:/home/claude/workspace
+    stdin_open: true
+    tty: true
