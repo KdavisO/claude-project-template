@@ -433,7 +433,7 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 
 - **テンプレートのセクション変更**: `docs/specs/_template.md` のセクションをプロジェクトに合わせて追加・削除
 - **CLAUDE.md の参照パターン**: `.claude/CLAUDE.md` の「仕様書」セクションをプロジェクトの運用に合わせて編集
-- **テンプレート同期**: downstream でカスタマイズする場合は `.templatesyncignore` に `docs/specs/` を追加
+- **テンプレート同期**: `docs/specs/` は既に `.templatesyncignore` で除外済み。downstream で同期したい場合は、`.templatesyncignore` から `docs/specs/` の行を削除
 
 ## skills/ ディレクトリ
 
