@@ -486,6 +486,46 @@ claude mcp add --transport stdio lsp -- npx @anthropic-ai/claude-code-lsp@latest
 }
 ```
 
+## コスト可視化（ステータスライン）
+
+Claude Code のカスタムステータスラインを使って、セッションコストやコンテキスト使用率をリアルタイムに確認できます。
+
+### 概要
+
+デフォルトではセッションのトークン消費量やコンテキストウィンドウの残量が把握しづらいため、`/statusline` コマンドでターミナル下部に情報を常時表示することを推奨します。
+
+### `/statusline` コマンドの使い方
+
+`/statusline` は自然言語で表示内容を設定できます:
+
+```text
+/statusline show me model, session cost, and context usage percentage
+```
+
+### 推奨表示項目
+
+| 項目 | 説明 |
+| --- | --- |
+| モデル名 | 使用中の Claude モデル（Opus / Sonnet / Haiku） |
+| セッションコスト | 現在のセッションで消費したトークンのコスト |
+| コンテキスト使用率 | コンテキストウィンドウの使用率（圧縮タイミングの判断に有用） |
+| Git ブランチ | 現在作業中のブランチ名 |
+
+### コミュニティツール
+
+ステータスラインの表示をさらにカスタマイズできるコミュニティツールがあります:
+
+- **ccstatusline** — ステータスラインのカスタマイズツール
+- **claude_monitor_statusline** — セッション監視向けのステータスライン拡張
+
+### 注意事項
+
+- ステータスラインは個人の好みに依存するため、テンプレートの `.claude/settings.json` には含めていません
+- 各ユーザーが `/statusline` コマンドで個別に設定してください
+- 設定はセッション単位で保持されます
+
+参考: [Claude Code コスト可視化](https://note.com/tatsuruokada/n/n72b7c8923b62)
+
 ## 書き換え手順
 
 1. テンプレートからリポジトリを作成
