@@ -211,14 +211,16 @@ PreToolUse フックは `.claude/settings.json` の `hooks.PreToolUse` セクシ
 git clone https://github.com/severity1/claude-code-prompt-improver.git
 cd claude-code-prompt-improver
 
-# 依存関係をインストール
-npm install
+# 依存関係をインストール（ローカル端末で実行）
+pnpm install
 
 # グローバルにリンク（任意）
-npm link
+pnpm link --global
 ```
 
 **settings.json への設定例:**
+
+既存の `.claude/settings.json` には `hooks.SessionEnd` などの設定が含まれている場合があります。以下は `hooks` オブジェクト内に `PreToolUse` を追記する例です。既存の `hooks` エントリを上書きしないよう注意してください:
 
 ```json
 {
@@ -238,7 +240,7 @@ npm link
 }
 ```
 
-> **注意:** このツールは外部のコミュニティプロジェクトであり、テンプレートの必須要件ではありません。導入はユーザーの判断に委ねます。`matcher` やコマンドパスはプロジェクトの要件に合わせて調整してください。
+> **注意:** このツールは外部のコミュニティプロジェクトであり、テンプレートの必須要件ではありません。`PreToolUse` フックで外部ツールのコマンドを実行すると、プロンプト内容や作業ディレクトリの情報が外部コードに渡る可能性があります。導入はユーザーの判断に委ねますが、利用前に実行内容を監査し、参照するコードはコミット固定し、必要権限や外部通信の有無・送信内容を確認してください。`matcher` やコマンドパスはプロジェクトの要件に合わせて調整してください。
 
 ### 参考
 
