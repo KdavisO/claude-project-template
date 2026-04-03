@@ -9,6 +9,7 @@
 .gitignore
 .claudeignore
 .claude/agents/
+docs/specs/
 
 # セットアップガイド（テンプレート側のみ必要）
 SETUP.md
