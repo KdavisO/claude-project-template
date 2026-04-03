@@ -7,6 +7,7 @@
 
 # ダウンストリーム固有のファイル（上書き防止）
 .gitignore
+.claudeignore
 
 # セットアップガイド（テンプレート側のみ必要）
 SETUP.md
