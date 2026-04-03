@@ -217,7 +217,7 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
         "hooks": [
           {
             "type": "command",
-            "command": "direnv export bash | sed 's/^export //' | while IFS='=' read -r key value; do echo \"$key=$value\"; done",
+            "command": "direnv export bash | grep '^export ' | sed 's/^export //'",
             "timeout": 10
           }
         ]
@@ -242,7 +242,7 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
         "hooks": [
           {
             "type": "command",
-            "command": "direnv export bash | sed 's/^export //' | while IFS='=' read -r key value; do echo \"$key=$value\"; done",
+            "command": "direnv export bash | grep '^export ' | sed 's/^export //'",
             "timeout": 10
           }
         ]
