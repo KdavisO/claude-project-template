@@ -12,7 +12,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 
 | ファイル                       | 書き換え箇所                                 | 説明                                                                             |
 | ------------------------------ | -------------------------------------------- | -------------------------------------------------------------------------------- |
-| `.claude/CLAUDE.md`                    | 全体                                         | プロジェクト概要・技術スタック・重要ファイル                                     |
+| `.claude/CLAUDE.md`                    | 全体                                         | プロジェクト概要・技術スタック・仕様書参照・重要ファイル                         |
 | `.claude/settings.json`                | `Bash(pnpm *)` 等、`env` セクション          | パッケージマネージャに合わせて許可コマンド変更、Agent Teams有効化設定、LSPプラグイン設定 |
 | `.claude/commands/issue-create.md`     | ラベル候補                                   | プロジェクトのラベル分類に合わせる                                               |
 | `.claude/commands/issue-start.md`      | `{project}-` プレフィックス                  | プロジェクト名に変更（worktreeディレクトリ名）                                   |
@@ -381,6 +381,59 @@ Agent(subagent_type="gemini-analyzer", prompt="src/ 配下の全 TypeScript フ�
 
 - サンプルエージェント（`gemini-analyzer.md`）は外部ツール（Gemini CLI）への依存があるため、利用前にインストールが必要です
 - downstream プロジェクトではプロジェクト固有のエージェントに置き換えることを想定しています
+
+## 仕様駆動開発（Spec-Driven Development）
+
+テンプレートには仕様駆動開発のためのディレクトリとテンプレートが含まれています。
+
+### 概要
+
+大きな機能をいきなり Claude Code に実装させると、ファイル配置やライブラリ選択がプロジェクトの慣習から外れることがあります。事前に Markdown の仕様書（要件、技術的制約、受け入れ基準）を `docs/specs/` に作成し、それに基づいて実装させることで品質が大幅に向上します。
+
+参考: [規範駆動開発](https://note.com/tatsuruokada/n/n72b7c8923b62)
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `docs/specs/_template.md` | 仕様書テンプレート（概要、要件、技術的制約、受け入れ基準、ファイル配置、使用ライブラリ、テスト要件） |
+| `.claude/CLAUDE.md` | `docs/specs/` への参照パターンを記載済み |
+
+### Issue と docs/specs/ の併用ワークフロー
+
+Issue（議論・タスク管理）と `docs/specs/`（確定仕様の永続化）を併用します:
+
+1. **Issue で議論・承認**: 要件の議論、タスク分解、優先度の決定を Issue で行う（従来の Issue 駆動開発そのまま）
+2. **仕様書に書き出し**: 確定した仕様を `docs/specs/` に Markdown で書き出す。テンプレート（`docs/specs/_template.md`）をコピーして使用
+3. **Claude Code が自動参照して実装**: `docs/specs/jwt-auth.md の仕様通りに実装して` のように指示すると、Claude Code が仕様書を読み込んで実装する
+
+この併用により、Issue の議論・進捗管理の利点と、Claude Code が仕様を自動読み込みできる `docs/specs/` の利点を両立します。
+
+### 仕様書の作成手順
+
+1. `docs/specs/_template.md` をコピーして新しいファイルを作成（例: `docs/specs/jwt-auth.md`）
+2. 各セクション（概要、要件、技術的制約、受け入れ基準等）を記入
+3. 関連する Issue 番号をリンク
+4. コミットしてリポジトリに保存
+
+### Claude Code への仕様書の渡し方
+
+```text
+# 仕様書を指定して実装を依頼
+docs/specs/jwt-auth.md の仕様通りに実装して
+
+# Issue と仕様書の両方を参照
+Issue #15 の要件を docs/specs/jwt-auth.md の仕様に基づいて実装して
+
+# 仕様書の作成自体を依頼
+Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書にまとめて
+```
+
+### カスタマイズ
+
+- **テンプレートのセクション変更**: `docs/specs/_template.md` のセクションをプロジェクトに合わせて追加・削除
+- **CLAUDE.md の参照パターン**: `.claude/CLAUDE.md` の「仕様書」セクションをプロジェクトの運用に合わせて編集
+- **テンプレート同期**: `docs/specs/` は既に `.templatesyncignore` で除外済み。downstream で同期したい場合は、`.templatesyncignore` から `docs/specs/` の行を削除
 
 ## skills/ ディレクトリ
 
