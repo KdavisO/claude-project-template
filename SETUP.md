@@ -22,6 +22,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.claude/rules/parallel-workflow.md`   | `docs/issue-groups.md` 参照                  | プロジェクトのIssueグループに合わせる                                            |
 | `.claude/rules/git-conventions.md`     | `{github_username}`, reviewer                | assignee/reviewer を変更                                                         |
 | `.claude/rules/project-structure.md`   | 全体                                         | プロジェクト構造に合わせて書き換え                                               |
+| `.claude/rules/reactive-hooks.md`      | ユースケース・スクリプト例                   | プロジェクトのディレクトリ構成・環境管理方法に合わせる                           |
 | `.github/release.yml`                  | カテゴリ・ラベル                             | プロジェクトのラベルに合わせてリリースノートのカテゴリを変更                     |
 | `.claudeignore`                        | 除外パターン                                 | プロジェクトの技術スタックに合わせて不要なパターンを削除・追加                   |
 
@@ -191,6 +192,93 @@ Agent Teams は複数のチームメイト（専門的な役割を持つエー�
 - 1セッションにつき1チームのみ作成可能
 - セッション復元（`/resume`）でチームメイトは復元されません
 - 詳細は `.claude/rules/agent-teams.md` を参照
+
+## リアクティブフック: CwdChanged / FileChanged（オプション）
+
+Claude Code v2.1.83 以降で利用可能な `CwdChanged` / `FileChanged` フックイベントを活用して、ディレクトリ移動やファイル変更に応じた環境の自動リロードを設定できます。モノレポ等でサービスごとに環境設定が異なる場合の事故防止に有効です。
+
+### 背景
+
+- `CwdChanged`: Claude がディレクトリを移動した際に発火。direnv 連携等で環境変数を自動リロードできる
+- `FileChanged`: 監視対象ファイルの変更を検知して発火。`.envrc` や `.env` の変更時に環境を自動更新できる
+- JSON ではコメントアウトができないため、設定例はこのドキュメントで提供する（テンプレートの `settings.json` には含まない）
+
+参考: [Claude Code Hooks ドキュメント](https://docs.anthropic.com/en/docs/claude-code/hooks)
+
+### CwdChanged の設定例（direnv 連携）
+
+Claude がディレクトリを移動するたびに `direnv export bash` を実行し、環境変数を自動リロードする例:
+
+```json
+{
+  "hooks": {
+    "CwdChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "direnv export bash | grep '^export ' | sed 's/^export //'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> **注意:** `direnv allow` はフック内で自動実行しないでください。事前に `direnv allow .` を手動で実行し、信頼するディレクトリを明示的に許可してください。フック内で自動実行すると、悪意ある `.envrc` が紛れた場合に任意コマンド実行に直結します。
+
+### FileChanged の設定例（.envrc / .env 変更時のリロード）
+
+`.envrc` や `.env` ファイルが変更された際に環境をリロードする例:
+
+```json
+{
+  "hooks": {
+    "FileChanged": [
+      {
+        "matcher": "**/.envrc",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "direnv export bash | grep '^export ' | sed 's/^export //'",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "**/.env",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -a && . .env && set +a && sh -c 'for key in NODE_ENV PORT; do eval \"value=\\${$key}\"; [ -n \"$value\" ] && printf \"%s=%s\\n\" \"$key\" \"$value\"; done'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### 有効化手順
+
+1. 上記の設定例から必要なものを選択
+2. プロジェクト固有の追加設定として `.claude/settings.local.json` の `hooks` セクションに追記（テンプレート管理の `.claude/settings.json` や既存の `SessionEnd` 等を上書きしないよう注意）
+3. direnv を使用する場合は、事前に `direnv` をインストールし、シェルに hook を設定しておく
+4. direnv を使用する場合は、対象ディレクトリで `direnv allow .` を手動で実行し、信頼するディレクトリを事前に許可しておく
+5. プロジェクト固有の `.envrc` / `.env` が存在することを確認
+6. `.env` 変更時のフックで出力するキー名（`NODE_ENV PORT` 等）をプロジェクトで使用する環境変数に合わせて変更する
+
+### 注意事項
+
+- これらのフックは downstream プロジェクトの環境に依存するため、テンプレートではオプション扱い（`settings.json` には含めない）
+- direnv を使用しない環境では `CwdChanged` フックは不要
+- `.env` ファイルの直接 source（`. .env`）はファイル内の任意のシェルコマンドが実行されるリスクがある。信頼できる `.env` ファイルでのみ使用し、不特定のファイルを自動 source しないこと。より安全な方法として、`grep` で `KEY=VALUE` 行のみを抽出するパーサーの使用を検討すること
+- `.env` の直接 source は簡易的な方法であり、複雑な環境設定には direnv の使用を推奨
+- `env` コマンドで全環境変数を出力すると機密情報がログに残る可能性があるため、必要なキーのみを明示的に出力すること
+- フック活用のベストプラクティスは `.claude/rules/reactive-hooks.md` を参照
 
 ## PreToolUse プロンプト強化フック（オプション）
 
