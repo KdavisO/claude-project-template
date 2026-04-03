@@ -515,8 +515,8 @@ Claude Code のカスタムステータスラインを使って、セッショ�
 
 ステータスラインの表示をさらにカスタマイズできるコミュニティツールがあります:
 
-- **ccstatusline** — ステータスラインのカスタマイズツール
-- **claude_monitor_statusline** — セッション監視向けのステータスライン拡張
+- **[ccstatusline](https://github.com/search?q=ccstatusline&type=repositories)** — ステータスラインのカスタマイズツール
+- **[claude_monitor_statusline](https://github.com/search?q=claude_monitor_statusline&type=repositories)** — セッション監視向けのステータスライン拡張
 
 ### 注意事項
 
