@@ -418,7 +418,7 @@ Issue（議論・タスク管理）と `docs/specs/`（確定仕様の永続化�
 
 ### Claude Code への仕様書の渡し方
 
-```bash
+```text
 # 仕様書を指定して実装を依頼
 docs/specs/jwt-auth.md の仕様通りに実装して
 
