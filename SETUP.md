@@ -23,6 +23,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.claude/rules/git-conventions.md`     | `{github_username}`, reviewer                | assignee/reviewer を変更                                                         |
 | `.claude/rules/project-structure.md`   | 全体                                         | プロジェクト構造に合わせて書き換え                                               |
 | `.github/release.yml`                  | カテゴリ・ラベル                             | プロジェクトのラベルに合わせてリリースノートのカテゴリを変更                     |
+| `.claudeignore`                        | 除外パターン                                 | プロジェクトの技術スタックに合わせて不要なパターンを削除・追加                   |
 
 **レビュワー名に関する注記:** `.claude/rules/git-conventions.md` ではassignee/reviewerの短縮名を、`.claude/commands/issue-pr.md` と `.claude/commands/review-respond.md` では正式名 `copilot-pull-request-reviewer[bot]` を使用しています。テンプレート展開時は、使用するレビュワーに合わせて**両方のファイル**を統一的に変更してください。
 
@@ -204,6 +205,6 @@ Agent Teams は複数のチームメイト（専門的な役割を持つエー�
 5. 必要に応じて `.claude/skills/` にプロジェクト固有のスキルを追加
 6. テンプレート同期を有効化（[docs/template-sync.md](docs/template-sync.md) 参照）:
    - `gh secret set TEMPLATE_SYNC_TOKEN` でテンプレート同期用PATを設定（必要な権限: Contents R/W, Pull requests R/W）
-   - `.templatesyncignore` にプロジェクト固有ファイルを追加（例: `.claude/CLAUDE.md`, `.claude/settings.json`。詳細は [docs/template-sync.md](docs/template-sync.md) の該当セクションを参照）
+   - `.templatesyncignore` にプロジェクト固有ファイルを追加（例: `.claude/CLAUDE.md`, `.claude/settings.json`）。`.claudeignore` をカスタマイズする場合はダウンストリーム側の `.templatesyncignore` にも `.claudeignore` を追加すること（テンプレート側の `.templatesyncignore` は同期されないため）。詳細は [docs/template-sync.md](docs/template-sync.md) の該当セクションを参照
    - `gh workflow run template-sync.yml` で動作確認
 7. この `SETUP.md` は書き換え完了後に削除してOK
