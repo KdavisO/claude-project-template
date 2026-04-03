@@ -208,7 +208,7 @@ LSP プラグインを有効にすると、Claude Code がテキストベース�
 
 | ファイル | 設定内容 |
 | --- | --- |
-| `.claude/settings.json` | `env` セクションの `ENABLE_LSP_TOOL: "1"` |
+| `.claude/settings.json` | `env` セクションの `"ENABLE_LSP_TOOL": "1"` |
 
 ### プラグインのインストール
 
