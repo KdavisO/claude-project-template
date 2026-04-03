@@ -218,7 +218,7 @@ LSP プラグインはコミュニティマーケットプレイスから入手�
 claude mcp add --transport stdio lsp -- npx @anthropic-ai/claude-code-lsp@latest
 ```
 
-参考: [Piebald-AI/claude-code-lsps](https://github.com/nicobailon/claude-code-lsps)
+参考: [Piebald-AI/claude-code-lsps](https://github.com/Piebald-AI/claude-code-lsps)
 
 ### 対応言語
 
