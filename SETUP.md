@@ -192,6 +192,60 @@ Agent Teams は複数のチームメイト（専門的な役割を持つエー�
 - セッション復元（`/resume`）でチームメイトは復元されません
 - 詳細は `.claude/rules/agent-teams.md` を参照
 
+## PreToolUse プロンプト強化フック（オプション）
+
+Claude Code の PreToolUse フックを使うと、ツール呼び出しの直前にカスタムスクリプトを実行できます。これを利用して、曖昧なプロンプトを自動で詳細な指示にリライトする仕組みを導入できます。
+
+### 仕組み
+
+PreToolUse フックは `.claude/settings.json` の `hooks.PreToolUse` セクションで設定します。ツール呼び出しが実行される前にフックが起動し、プロンプトの明瞭さを評価・改善した結果を返すことで、より正確な応答を得られます。
+
+### コミュニティツール: claude-code-prompt-improver
+
+[severity1/claude-code-prompt-improver](https://github.com/severity1/claude-code-prompt-improver) は、PreToolUse フックとして動作するプロンプト強化ツールです。
+
+**インストール手順:**
+
+```bash
+# リポジトリをクローン
+git clone https://github.com/severity1/claude-code-prompt-improver.git
+cd claude-code-prompt-improver
+
+# 依存関係をインストール（ローカル端末で実行）
+pnpm install
+```
+
+**settings.json への設定例:**
+
+既存の `.claude/settings.json` には `hooks.SessionEnd` などの設定が含まれている場合があります。以下は `hooks` オブジェクト内に `PreToolUse` を追記する例です。既存の `hooks` エントリを上書きしないよう注意してください。
+
+`matcher` はフックを適用するツール名のパターンを指定します（例: `"Task"` は TaskCreate/TaskUpdate 等のツール呼び出しにマッチ）。すべてのツールに適用する場合は `matcher` を省略するか `"*"` を指定してください。`command` にはクローンしたリポジトリ内のスクリプトの絶対パスを指定します:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claude-code-prompt-improver/index.js"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> **注意:** このツールは外部のコミュニティプロジェクトであり、テンプレートの必須要件ではありません。`PreToolUse` フックで外部ツールのコマンドを実行すると、プロンプト内容や作業ディレクトリの情報が外部コードに渡る可能性があります。導入はユーザーの判断に委ねますが、利用前に実行内容を監査し、参照するコードはコミット固定し、必要権限や外部通信の有無・送信内容を確認してください。`matcher` やコマンドパスはプロジェクトの要件に合わせて調整してください。
+
+### 参考
+
+- [Anthropic コンソール プロンプト改善ツール](https://console.anthropic.com/) — 公式のプロンプト最適化機能
+- [Claude Code Hooks ドキュメント](https://docs.anthropic.com/en/docs/claude-code/hooks)
+
 ## skills/ ディレクトリ
 
 `skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。テンプレートでは `.gitkeep` のみが含まれています。
