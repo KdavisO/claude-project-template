@@ -213,14 +213,13 @@ cd claude-code-prompt-improver
 
 # 依存関係をインストール（ローカル端末で実行）
 pnpm install
-
-# グローバルにリンク（任意）
-pnpm link --global
 ```
 
 **settings.json への設定例:**
 
-既存の `.claude/settings.json` には `hooks.SessionEnd` などの設定が含まれている場合があります。以下は `hooks` オブジェクト内に `PreToolUse` を追記する例です。既存の `hooks` エントリを上書きしないよう注意してください:
+既存の `.claude/settings.json` には `hooks.SessionEnd` などの設定が含まれている場合があります。以下は `hooks` オブジェクト内に `PreToolUse` を追記する例です。既存の `hooks` エントリを上書きしないよう注意してください。
+
+`matcher` はフックを適用するツール名のパターンを指定します（例: `"Task"` は TaskCreate/TaskUpdate 等のツール呼び出しにマッチ）。すべてのツールに適用する場合は `matcher` を省略するか `"*"` を指定してください。`command` にはクローンしたリポジトリ内のスクリプトの絶対パスを指定します:
 
 ```json
 {
