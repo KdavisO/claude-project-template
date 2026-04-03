@@ -246,6 +246,54 @@ pnpm install
 - [Anthropic コンソール プロンプト改善ツール](https://console.anthropic.com/) — 公式のプロンプト最適化機能
 - [Claude Code Hooks ドキュメント](https://docs.anthropic.com/en/docs/claude-code/hooks)
 
+## カスタムサブエージェント（agents/）
+
+`.claude/agents/` にはカスタムサブエージェントの定義ファイルを配置します。サブエージェントを使うと、外部ツール（Gemini CLI 等）をラップして大規模解析やウェブアクセスを Claude Code から委任できます。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.claude/agents/gemini-analyzer.md` | Gemini CLI を使った大規模コードベース解析のサンプルエージェント |
+
+### エージェント定義の構造
+
+エージェント定義ファイルは Markdown 形式で、以下のフロントマターを含みます:
+
+```yaml
+---
+name: エージェント名
+description: エージェントの説明（Agent ツールの description に表示される）
+model: sonnet  # 使用するモデル（省略可）
+tools:         # エージェントが使用できるツール
+  - Bash
+  - Read
+  - Glob
+  - Grep
+---
+```
+
+フロントマター以降にエージェントへのシステムプロンプト（役割、手順、注意事項等）を記述します。
+
+### 使い方
+
+```
+# Agent ツールで直接呼び出し
+Agent(subagent_type="gemini-analyzer", prompt="src/ 配下の全 TypeScript ファイルのアーキテクチャを分析してください")
+```
+
+### カスタマイズ
+
+- **新しいエージェントの追加**: `.claude/agents/` に新しい `.md` ファイルを作成
+- **既存エージェントの編集**: フロントマターのツール一覧やシステムプロンプトを変更
+- **モデルの変更**: `model` フィールドで `sonnet`, `opus`, `haiku` を指定
+- **外部ツールの前提条件**: エージェントが依存する外部ツール（Gemini CLI 等）のインストール手順をエージェント定義内に記載
+
+### 注意事項
+
+- サンプルエージェント（`gemini-analyzer.md`）は外部ツール（Gemini CLI）への依存があるため、利用前にインストールが必要です
+- downstream プロジェクトではプロジェクト固有のエージェントに置き換えることを想定しています
+
 ## skills/ ディレクトリ
 
 `skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。テンプレートでは `.gitkeep` のみが含まれています。
