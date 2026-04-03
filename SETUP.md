@@ -192,6 +192,59 @@ Agent Teams は複数のチームメイト（専門的な役割を持つエー�
 - セッション復元（`/resume`）でチームメイトは復元されません
 - 詳細は `.claude/rules/agent-teams.md` を参照
 
+## PreToolUse プロンプト強化フック（オプション）
+
+Claude Code の PreToolUse フックを使うと、ツール呼び出しの直前にカスタムスクリプトを実行できます。これを利用して、曖昧なプロンプトを自動で詳細な指示にリライトする仕組みを導入できます。
+
+### 仕組み
+
+PreToolUse フックは `.claude/settings.json` の `hooks.PreToolUse` セクションで設定します。ツール呼び出しが実行される前にフックが起動し、プロンプトの明瞭さを評価・改善した結果を返すことで、より正確な応答を得られます。
+
+### コミュニティツール: claude-code-prompt-improver
+
+[severity1/claude-code-prompt-improver](https://github.com/severity1/claude-code-prompt-improver) は、PreToolUse フックとして動作するプロンプト強化ツールです。
+
+**インストール手順:**
+
+```bash
+# リポジトリをクローン
+git clone https://github.com/severity1/claude-code-prompt-improver.git
+cd claude-code-prompt-improver
+
+# 依存関係をインストール
+npm install
+
+# グローバルにリンク（任意）
+npm link
+```
+
+**settings.json への設定例:**
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claude-code-prompt-improver/index.js"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> **注意:** このツールは外部のコミュニティプロジェクトであり、テンプレートの必須要件ではありません。導入はユーザーの判断に委ねます。`matcher` やコマンドパスはプロジェクトの要件に合わせて調整してください。
+
+### 参考
+
+- [Anthropic コンソール プロンプト改善ツール](https://console.anthropic.com/) — 公式のプロンプト最適化機能
+- [Claude Code Hooks ドキュメント](https://docs.anthropic.com/en/docs/claude-code/hooks)
+
 ## skills/ ディレクトリ
 
 `skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。テンプレートでは `.gitkeep` のみが含まれています。
