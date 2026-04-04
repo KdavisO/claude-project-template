@@ -146,7 +146,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
    - 全PRのポーリング引き継ぎが完了してから、手順6のシャットダウンに進む
    - **注意（CWDとworktreeの関係）**: 引き継ぎ後のポーリングが発火する際のCWDはリードセッションのその時点のCWDとなる。PRが1件の場合はそのworktreeに留まればよい。**複数PRの場合は以下のいずれかの方法を採用すること**:
      - **推奨**: PRごとに別セッション（サブエージェント等）で `/loop` を作成し、各セッションのCWDを対象worktreeに固定する
-     - **代替**: 各PRのworktreeパスをポーリングコマンドに組み込み、発火時に必ず正しいworktreeへ移動してから実行する
+     - **代替**: 各PRのworktreeパスを `/loop` に渡す実行プロンプトへ明示的に埋め込み、発火のたびに `cd` してから `/review-respond` を実行する。例: `/loop 4m --skip-first "cd /absolute/path/to/worktree-pr-123 && /review-respond --auto --max-idle 3 123"`。要点は**毎回 `/review-respond` の直前で対象worktreeへ移動するコマンドを1つの実行文字列に含めること**
      - 上記のいずれも適用できない場合は、複数PRのポーリング引き継ぎを行わず手動運用とする
    - マージ完了後のworktreeクリーンアップは `/worktree-cleanup` で手動実行すること（ポーリング引き継ぎ後はリードのメインリポジトリコンテキストではなくworktreeコンテキストで動作するが、CWD変動により `/review-respond` のポストアクション手順10-Cによる自動worktree削除が確実に動作する保証はないため）
 6. 各チームメイトに終了を指示してチームを解散する
@@ -198,7 +198,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
    - `/issue-pr --auto` の成功後、ステータスファイルを更新（原子的書き換え）: 手順2で使用した STATUS_FILE / STATUS_FILE_TMP を用い、`.tmp` に書き出してから `mv` で置き換える手順で、phase を "pr-created" に、pr フィールドにPR番号を設定し、updated_at を現在時刻に更新する
    - Copilotレビューリクエストが成功した場合、`/issue-pr --auto` が自動で `/loop ... /review-respond --auto --max-idle 3` によるレビュー対応ポーリングを開始する。このポーリングはcronでバックグラウンド実行され、`/issue-pr --auto` 自体はポーリング完了まで同期的には待機しない
    - ポーリング開始を確認したら、ステータスファイルを更新: phase を "polling" に設定し、updated_at を現在時刻に更新する（ここではポーリング完了を待たずに次の手順へ進む）
-   - PRマージは `/review-respond --auto --max-idle 3` のポストアクション（手順10-A）で自動実行される。worktreeクリーンアップ（手順10-C）はポーリング実行時のCWDがworktree内である場合のみ自動実行される（リードへのポーリング引き継ぎ後はCWD変動により自動実行されない場合があるため、`/worktree-cleanup` での手動クリーンアップも想定すること）
+   - PRマージは `/review-respond --auto --max-idle 3` のポストアクション（手順10-A）で自動実行されるが、このポストアクション自体は `--max-idle` による自動停止が発動し、停止理由が「未対応コメントなし」の場合にのみ実行される。Copilotレビュー未着で停止した場合などは自動マージが走らない。worktreeクリーンアップ（手順10-C）はポーリング実行時のCWDがworktree内である場合のみ自動実行される（リードへのポーリング引き継ぎ後はCWD変動により自動実行されない場合があるため、`/worktree-cleanup` での手動クリーンアップも想定すること）
 
 7. 完了をリードに報告（ブランチ名、PR番号、worktreeの絶対パス、変更ファイル一覧を含める。cronタスクIDファイルはPR番号から固定パス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` で特定できる前提とする）
 
