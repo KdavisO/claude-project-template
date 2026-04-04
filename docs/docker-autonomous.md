@@ -18,22 +18,26 @@ Docker コンテナ内で Claude Code を `--dangerously-skip-permissions` フ�
 
 ### イメージのビルド
 
-Claude Code のバージョンを明示指定してビルドする（`latest` は非推奨）:
-
-```bash
-docker compose build --build-arg CLAUDE_CODE_VERSION=1.0.0
-```
+Claude Code のバージョンと API キーを環境変数で設定してビルド・実行する。
 
 ### 環境変数の設定
 
 ```bash
+export CLAUDE_CODE_VERSION="1.0.0"
 export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
 または `.env` ファイルに記載:
 
 ```
+CLAUDE_CODE_VERSION=1.0.0
 ANTHROPIC_API_KEY=sk-ant-...
+```
+
+### イメージのビルド
+
+```bash
+docker compose build
 ```
 
 > **注意**: `.env` には API キーが含まれるため、リポジトリにコミットしないこと。  
@@ -82,16 +86,16 @@ echo "テストを追加してください" | docker compose run --rm -T claude
 jobs:
   claude-code:
     runs-on: ubuntu-latest
+    env:
+      CLAUDE_CODE_VERSION: '1.0.0'
     steps:
       - uses: actions/checkout@v4
       - name: Build Claude image
-        run: |
-          docker compose build --build-arg CLAUDE_CODE_VERSION=1.0.0
+        run: docker compose build
       - name: Run Claude Code
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          docker compose run -T --rm claude "全テストを実行し、失敗があれば修正してください"
+        run: docker compose run -T --rm claude "全テストを実行し、失敗があれば修正してください"
 ```
 
 ### 夜間バッチ処理
@@ -105,16 +109,16 @@ on:
 jobs:
   nightly:
     runs-on: ubuntu-latest
+    env:
+      CLAUDE_CODE_VERSION: '1.0.0'
     steps:
       - uses: actions/checkout@v4
       - name: Build Claude image
-        run: |
-          docker compose build --build-arg CLAUDE_CODE_VERSION=1.0.0
+        run: docker compose build
       - name: Run Claude Code
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          docker compose run -T --rm claude "コードベースを分析し、改善提案をIssueとして起票してください"
+        run: docker compose run -T --rm claude "コードベースを分析し、改善提案をIssueとして起票してください"
 ```
 
 ## セキュリティ上の注意
@@ -123,7 +127,7 @@ jobs:
 - **ネットワーク制限**: Claude Code は Anthropic API への通信が必要なため、`network_mode: "none"` のような完全遮断は不可。外部通信を制限したい場合は、ファイアウォール、プロキシ、または別ネットワーク設計により許可する宛先を必要最小限に絞る
 - **ボリュームマウント**: マウント先はプロジェクトディレクトリに限定し、ホストのホームディレクトリ全体をマウントしない
 - **イメージの更新**: Claude Code のバージョンアップに追従するため、定期的にイメージをリビルドする
-- **コンテナ内の権限**: Dockerfile では非 root（指定 UID/GID）で実行するよう設定済み。UID が既存ユーザーと衝突する場合など、実行時のユーザー名は常に `claude` になるとは限らない。ボリュームマウントしたワークスペースの UID/GID と一致しない場合、ファイル生成・編集に失敗することがある。その場合はビルド時に UID/GID を合わせる: `docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)`
+- **コンテナ内の権限**: Dockerfile では非 root（指定 UID/GID）で実行するよう設定済み。UID が既存ユーザーと衝突する場合など、実行時のユーザー名は常に `claude` になるとは限らない。ボリュームマウントしたワークスペースの UID/GID と一致しない場合、ファイル生成・編集に失敗することがある。その場合はビルド時に UID/GID を合わせる: `docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)`（`CLAUDE_CODE_VERSION` 環境変数の設定も必要）
 
 ## カスタマイズ
 

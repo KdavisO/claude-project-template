@@ -6,6 +6,7 @@
 #
 # 環境変数:
 #   ANTHROPIC_API_KEY: Anthropic API キー（必須）
+#   CLAUDE_CODE_VERSION: Claude Code のバージョン（必須、例: 1.0.0）
 
 services:
   claude:
