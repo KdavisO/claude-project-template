@@ -134,16 +134,17 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
    - 手順1で取得したIssue内容をチームメイトへの指示に埋め込む（各チームメイトが個別に `gh issue view` を実行しなくてよいようにする）
 4. 各チームメイトの進捗を監視し、全員の完了を待つ
 5. **ポーリング引き継ぎ**（全チームメイト完了後、シャットダウン前に実施）:
-   - 各チームメイトの完了報告からPR番号を収集する（cronタスクIDファイルはPR番号から固定パス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` で特定できる）
+   - 各チームメイトの完了報告からPR番号とworktreeパスを収集する（cronタスクIDファイルはPR番号から固定パス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` で特定できる）
    - 各PRについて以下を順次実行する:
      1. cronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）を読み取り、チームメイトのcronタスクIDを取得する
-     2. リードから新しいポーリングを開始する: `/loop 4m --skip-first /review-respond --auto --max-idle 3 {PR番号}`
-     3. `/loop`（CronCreate）の戻り値から新しいcronタスクIDを取得し、cronタスクIDファイルを上書きする
-     4. 新しいポーリングの作成とcronタスクIDファイル更新の成功を確認してから、手順1で取得した旧タスクIDで `CronDelete` を実行し、チームメイトのcronタスクを明示的に削除する
+     2. 対象PRのworktreeディレクトリに移動する（`cd {worktreeパス}`）。`/review-respond` がコード修正・コミット・プッシュを行う際にPRブランチで正しく動作するために必要。worktreeが存在しない場合は `git worktree list` からブ���ンチ名でworktreeパスを特定する。いずれの方法でもworktreeを特定できない場合は、そのPRの引き継ぎをスキップし警告を出力する
+     3. worktreeディレクトリ内で、リードから新しいポーリングを開始する: `/loop 4m --skip-first /review-respond --auto --max-idle 3 {PR番号}`
+     4. `/loop`（CronCreate）の戻り値から新しいcronタスクIDを取得し、cronタスクIDファイルを上書きする
+     5. 新しいポーリングの作成とcronタスクIDファイル更新の成功を確認してから、手順1で取得した旧タスクIDで `CronDelete` を実行し、チームメイトのcronタスクを明示的に削除する
    - cronタスクIDファイルが存在しない場合（Copilotレビューリクエスト失敗等でポーリング未開始）はそのPRをスキップし、警告を出力する
    - 新しいポーリングの作成またはcronタスクID取得に失敗した場合は、旧cronタスクを削除せずそのPRの引き継ぎをスキップし、警告を出力する
    - 全PRのポーリング引き継ぎが完了してから、手順6のシャットダウンに進む
-   - **注意**: リードから開始したポーリングはメインリポジトリのコンテキストで実行されるため、`/review-respond` のポストアクション（手順10-C）による自動worktree削除は実行されない。マージ完了後は `/worktree-cleanup` で手動クリーンアップすること
+   - **注意**: 引き継ぎ後のポーリングが発火する際のCWDはリードセッションのその時点のCWDとなる。複数PRを引き継いだ場合、リードのCWDは最後に `cd` したworktreeになるため、他のPRのポーリングがコード修正を試みると正しいworktreeで動作しない可能性がある。PRが1件の場合は���のworktreeに留まればよいが、複数PRの場合は `/review-respond` のコード修正ステップで適切なworktreeへの移動が必要になる。マージ完了後のworktreeクリーンアップは `/worktree-cleanup` で手動実行すること
 6. 各チームメイトに終了を指示してチームを解散する
 7. 全チームメイトの結果を統合して完了サマリーを出力する:
    ```
