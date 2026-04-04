@@ -5,7 +5,7 @@ Docker コンテナ内で Claude Code を `--dangerously-skip-permissions` フ�
 ## なぜ Docker で実行するか
 
 - **許可疲れの解消**: ファイル書き込み・シェルコマンド・テスト実行のたびに承認が不要になる
-- **ホスト環境の安全性**: コンテナ内に隔離されるため、ホストマシンへの影響がない
+- **ホスト環境への影響を限定**: コンテナ内で動作するためホスト全体の汚染は抑えやすいが、ボリュームマウントしたプロジェクトディレクトリ内のファイル変更はホスト側にも直接反映される
 - **再現性**: 同一の実行環境を誰でも再現できる
 - **CI/CD 統合**: 自動パイプラインに組み込みやすい
 
@@ -15,6 +15,14 @@ Docker コンテナ内で Claude Code を `--dangerously-skip-permissions` フ�
 
 - Docker および Docker Compose がインストール済み
 - Anthropic API キーを取得済み
+
+### イメージのビルド
+
+Claude Code のバージョンを明示指定してビルドする（`latest` は非推奨）:
+
+```bash
+docker compose build --build-arg CLAUDE_CODE_VERSION=1.0.0
+```
 
 ### 環境変数の設定
 
@@ -109,7 +117,7 @@ jobs:
 - **ネットワーク制限**: Claude Code は Anthropic API への通信が必要なため、`network_mode: "none"` のような完全遮断は不可。外部通信を制限したい場合は、ファイアウォール、プロキシ、または別ネットワーク設計により許可する宛先を必要最小限に絞る
 - **ボリュームマウント**: マウント先はプロジェクトディレクトリに限定し、ホストのホームディレクトリ全体をマウントしない
 - **イメージの更新**: Claude Code のバージョンアップに追従するため、定期的にイメージをリビルドする
-- **コンテナ内の権限**: Dockerfile では非 root ユーザー（`claude`）で実行するよう設定済み
+- **コンテナ内の権限**: Dockerfile では非 root ユーザー（`claude`）で実行するよう設定済み。ボリュームマウントしたワークスペースの UID/GID と一致しない場合、ファイル生成・編集に失敗することがある。その場合はビルド時に UID/GID を合わせる: `docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)`
 
 ## カスタマイズ
 

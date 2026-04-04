@@ -11,16 +11,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     jq \
     && rm -rf /var/lib/apt/lists/*
 
-# Claude Code をグローバルインストール（バージョン指定可能）
-ARG CLAUDE_CODE_VERSION=latest
-RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+# Claude Code をグローバルインストール（固定バージョン指定を推奨）
+# `latest` はビルド再現性を損なうため、確認済みバージョンを明示指定すること
+# 例: docker compose build --build-arg CLAUDE_CODE_VERSION=1.0.0
+ARG CLAUDE_CODE_VERSION
+RUN test -n "${CLAUDE_CODE_VERSION}" \
+    && npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
 
 # 作業ユーザーを作成（root での実行を避ける）
 # UID/GID をビルド引数で指定可能（CI 環境でホスト側と合わせる用途）
-ARG UID=1000
-ARG GID=1000
-RUN groupadd -g "${GID}" claude && useradd -m -s /bin/bash -u "${UID}" -g "${GID}" claude
-USER claude
+# node:22-slim には UID/GID=1000 の node ユーザーが存在するため、デフォルトは競合しない値にする
+ARG UID=10001
+ARG GID=10001
+RUN if ! getent group "${GID}" > /dev/null 2>&1; then \
+      groupadd -g "${GID}" claude; \
+    fi && \
+    if ! getent passwd "${UID}" > /dev/null 2>&1; then \
+      useradd -m -s /bin/bash -u "${UID}" -g "${GID}" -d /home/claude claude; \
+    fi && \
+    mkdir -p /home/claude/workspace && \
+    chown "${UID}:${GID}" /home/claude/workspace
+USER ${UID}
 WORKDIR /home/claude/workspace
 
 # デフォルトコマンド: 完全自律モードで Claude Code を起動

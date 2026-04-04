@@ -14,5 +14,3 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}
     volumes:
       - .:/home/claude/workspace
-    stdin_open: false
-    tty: false
