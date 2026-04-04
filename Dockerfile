@@ -11,11 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     jq \
     && rm -rf /var/lib/apt/lists/*
 
-# Claude Code をグローバルインストール
-RUN npm install -g @anthropic-ai/claude-code
+# Claude Code をグローバルインストール（バージョン指定可能）
+ARG CLAUDE_CODE_VERSION=latest
+RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
 
 # 作業ユーザーを作成（root での実行を避ける）
-RUN useradd -m -s /bin/bash claude
+# UID/GID をビルド引数で指定可能（CI 環境でホスト側と合わせる用途）
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g "${GID}" claude && useradd -m -s /bin/bash -u "${UID}" -g "${GID}" claude
 USER claude
 WORKDIR /home/claude/workspace
 

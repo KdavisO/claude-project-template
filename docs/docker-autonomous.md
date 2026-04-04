@@ -28,7 +28,15 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-> **注意**: `.env` ファイルは `.gitignore` に追加し、リポジトリにコミットしないこと。
+> **注意**: `.env` には API キーが含まれるため、リポジトリにコミットしないこと。  
+> このリポジトリに `.gitignore` が存在しない場合は、ルートに `.gitignore` を新規作成して `.env` を追加してください。
+>
+> ```gitignore
+> .env
+> ```
+>
+> すでに `.env` を Git 管理下に入れてしまった場合は、`git rm --cached .env` で追跡対象から外してください。  
+> リポジトリの `.gitignore` を使えない運用では、グローバル gitignore や CI/CD の Secrets / Environment Variables を利用して秘密情報を管理してください。
 
 ## 使用方法
 
@@ -52,8 +60,10 @@ docker compose run --rm claude -p "$(cat prompt.txt)"
 
 ### パイプ入力
 
+パイプ入力時は `-T` で TTY を無効化する必要がある:
+
 ```bash
-echo "テストを追加してください" | docker compose run --rm claude
+echo "テストを追加してください" | docker compose run --rm -T claude
 ```
 
 ## CI/CD での使用パターン
@@ -70,7 +80,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          docker compose run --rm claude "全テストを実行し、失敗があれば修正してください"
+          docker compose run -T --rm claude "全テストを実行し、失敗があれば修正してください"
 ```
 
 ### 夜間バッチ処理
@@ -90,13 +100,13 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          docker compose run --rm claude "コードベースを分析し、改善提案をIssueとして起票してください"
+          docker compose run -T --rm claude "コードベースを分析し、改善提案をIssueとして起票してください"
 ```
 
 ## セキュリティ上の注意
 
 - **API キーの管理**: 環境変数またはシークレット管理ツール経由で渡す。Dockerfile やイメージ内にハードコードしない
-- **ネットワーク制限**: 必要に応じて `docker-compose.yml` で `network_mode: "none"` を設定し、外部通信を制限できる
+- **ネットワーク制限**: Claude Code は Anthropic API への通信が必要なため、`network_mode: "none"` のような完全遮断は不可。外部通信を制限したい場合は、ファイアウォール、プロキシ、または別ネットワーク設計により許可する宛先を必要最小限に絞る
 - **ボリュームマウント**: マウント先はプロジェクトディレクトリに限定し、ホストのホームディレクトリ全体をマウントしない
 - **イメージの更新**: Claude Code のバージョンアップに追従するため、定期的にイメージをリビルドする
 - **コンテナ内の権限**: Dockerfile では非 root ユーザー（`claude`）で実行するよう設定済み

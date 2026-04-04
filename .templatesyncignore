@@ -11,5 +11,9 @@
 .claude/agents/
 docs/specs/
 
+# Docker 実行環境（プロジェクト固有にカスタマイズされる可能性あり）
+Dockerfile
+docker-compose.yml
+
 # セットアップガイド（テンプレート側のみ必要）
 SETUP.md
