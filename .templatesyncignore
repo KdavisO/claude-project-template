@@ -10,6 +10,12 @@
 .claudeignore
 .claude/agents/
 docs/specs/
+docs/docker-autonomous.md
+
+# Docker 実行環境（プロジェクト固有にカスタマイズされる可能性あり）
+Dockerfile
+docker-compose.yml
+.dockerignore
 
 # セットアップガイド（テンプレート側のみ必要）
 SETUP.md
