@@ -29,8 +29,12 @@ RUN if ! getent group "${GID}" > /dev/null 2>&1; then \
     if ! getent passwd "${UID}" > /dev/null 2>&1; then \
       useradd -m -s /bin/bash -u "${UID}" -g "${GID}" -d /home/claude claude; \
     fi && \
-    mkdir -p /home/claude/workspace && \
-    chown "${UID}:${GID}" /home/claude/workspace
+    mkdir -p /home/claude /home/claude/workspace /home/claude/.config /home/claude/.cache /home/claude/.local/state && \
+    chown -R "${UID}:${GID}" /home/claude
+ENV HOME=/home/claude \
+    XDG_CONFIG_HOME=/home/claude/.config \
+    XDG_CACHE_HOME=/home/claude/.cache \
+    XDG_STATE_HOME=/home/claude/.local/state
 USER ${UID}
 WORKDIR /home/claude/workspace
 
