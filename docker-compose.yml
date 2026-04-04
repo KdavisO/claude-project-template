@@ -9,7 +9,10 @@
 
 services:
   claude:
-    build: .
+    build:
+      context: .
+      args:
+        - CLAUDE_CODE_VERSION=${CLAUDE_CODE_VERSION:?CLAUDE_CODE_VERSION is required}
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}
     volumes:

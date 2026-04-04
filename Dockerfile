@@ -15,8 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # `latest` はビルド再現性を損なうため、確認済みバージョンを明示指定すること
 # 例: docker compose build --build-arg CLAUDE_CODE_VERSION=1.0.0
 ARG CLAUDE_CODE_VERSION
-RUN test -n "${CLAUDE_CODE_VERSION}" \
-    && npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+RUN if [ -z "${CLAUDE_CODE_VERSION}" ]; then \
+      echo "CLAUDE_CODE_VERSION is required. Specify it with --build-arg CLAUDE_CODE_VERSION=<version>." >&2; \
+      exit 1; \
+    fi && \
+    npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
 
 # 作業ユーザーを作成（root での実行を避ける）
 # UID/GID をビルド引数で指定可能（CI 環境でホスト側と合わせる用途）
