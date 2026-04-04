@@ -134,10 +134,10 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
    - 手順1で取得したIssue内容をチームメイトへの指示に埋め込む（各チームメイトが個別に `gh issue view` を実行しなくてよいようにする）
 4. 各チームメイトの進捗を監視し、全員の完了を待つ
 5. **ポーリング引き継ぎ**（全チームメイト完了後、シャットダウン前に実施）:
-   - 各チームメイトの完了報告からPR番号とブランチ名を収集する（worktreeパスが報告されている場合は併せて控える。cronタスクIDファイルはPR番号から固定パス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` で特定できる）
+   - 各チームメイトの完了報告からPR番号・ブランチ名・worktreeの絶対パスを収集する（cronタスクIDファイルはPR番号から固定パス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` で特定できる）
    - 各PRについて以下を順次実行する:
      1. cronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）を読み取り、チームメイトのcronタスクIDを取得する
-     2. 対象PRのworktreeパスを決定し、そのディレクトリに移動する。完了報告にworktreeパスが含まれていればそれを使って `cd {worktreeパス}` する。含まれていない場合は `git worktree list` からブランチ名でworktreeパスを特定して `cd` する。`/review-respond` がコード修正・コミット・プッシュを行う際にPRブランチで正しく動作するために必要。いずれの方法でもworktreeを特定できない場合は、そのPRの引き継ぎをスキップし警告を出力する
+     2. 対象PRのworktreeパスを決定し、そのディレクトリに移動する。完了報告に含まれるworktreeの絶対パスを使って `cd {worktreeパス}` する。報告されたworktreeパスが欠落・不正・到達不能な場合のみ、`git worktree list` からブランチ名でworktreeパスを再特定して `cd` する。`/review-respond` がコード修正・コミット・プッシュを行う際にPRブランチで正しく動作するために必要。いずれの方法でもworktreeを特定できない場合は、そのPRの引き継ぎをスキップし警告を出力する
      3. worktreeディレクトリ内で、リードから新しいポーリングを開始する: `/loop 4m --skip-first /review-respond --auto --max-idle 3 {PR番号}`
      4. `/loop`（CronCreate）の戻り値から新しいcronタスクIDを取得し、cronタスクIDファイルを上書きする
      5. 新しいポーリングの作成とcronタスクIDファイル更新の成功を確認してから、手順1で取得した旧タスクIDで `CronDelete` を実行し、チームメイトのcronタスクを明示的に削除する
