@@ -134,13 +134,14 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
    - 手順1で取得したIssue内容をチームメイトへの指示に埋め込む（各チームメイトが個別に `gh issue view` を実行しなくてよいようにする）
 4. 各チームメイトの進捗を監視し、全員の完了を待つ
 5. **ポーリング引き継ぎ**（全チームメイト完了後、シャットダウン前に実施）:
-   - 各チームメイトの完了報告からPR番号とcronタスクIDファイルパスを収集する
+   - 各チームメイトの完了報告からPR番号を収集する（cronタスクIDファイルはPR番号から固定パス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` で特定できる）
    - 各PRについて以下を順次実行する:
      1. cronタスクIDファイル（`/tmp/{project}-review-{ownerRepo}-cron-{PR番号}`）を読み取り、チームメイトのcronタスクIDを取得する
-     2. 取得したタスクIDで `CronDelete` を実行し、チームメイトのcronタスクを明示的に削除する（シャットダウンで暗黙に消える前に引き継ぎを確実にするため）
-     3. リードから新しいポーリングを開始する: `/loop 4m --skip-first /review-respond --auto --max-idle 3 {PR番号}`
-     4. `/loop`（CronCreate）の戻り値から新しいcronタスクIDを取得し、cronタスクIDファイルを上書きする
+     2. リードから新しいポーリングを開始する: `/loop 4m --skip-first /review-respond --auto --max-idle 3 {PR番号}`
+     3. `/loop`（CronCreate）の戻り値から新しいcronタスクIDを取得し、cronタスクIDファイルを上書きする
+     4. 新しいポーリングの作成とcronタスクIDファイル更新の成功を確認してから、手順1で取得した旧タスクIDで `CronDelete` を実行し、チームメイトのcronタスクを明示的に削除する
    - cronタスクIDファイルが存在しない場合（Copilotレビューリクエスト失敗等でポーリング未開始）はそのPRをスキップし、警告を出力する
+   - 新しいポーリングの作成またはcronタスクID取得に失敗した場合は、旧cronタスクを削除せずそのPRの引き継ぎをスキップし、警告を出力する
    - 全PRのポーリング引き継ぎが完了してから、手順6のシャットダウンに進む
    - **注意**: リードから開始したポーリングはメインリポジトリのコンテキストで実行されるため、`/review-respond` のポストアクション（手順10-C）による自動worktree削除は実行されない。マージ完了後は `/worktree-cleanup` で手動クリーンアップすること
 6. 各チームメイトに終了を指示してチームを解散する
@@ -194,7 +195,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
    - ポーリング開始を確認したら、ステータスファイルを更新: phase を "polling" に設定し、updated_at を現在時刻に更新する（ここではポーリング完了を待たずに次の手順へ進む）
    - PRマージおよびブランチ削除・worktreeクリーンアップは、`/review-respond --auto --max-idle 3` のポストアクション（手順10）で自動実行される。このフローでは追加の手動操作は行わない
 
-7. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧、cronタスクIDファイルパス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` を含める）
+7. 完了をリードに報告（ブランチ名、PR番号、変更ファイル一覧を含める。cronタスクIDファイルはPR番号から固定パス `/tmp/{project}-review-{ownerRepo}-cron-{PR番号}` で特定できる前提とする）
 
 8. ステータスファイルのクリーンアップ:
    - 正常終了時:
