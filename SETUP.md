@@ -97,6 +97,77 @@ resolve-library-id で React のドキュメントを検索して
 - `npx` による初回起動時にパッケージのダウンロードが発生します
 - Node.js（v18 以上）が必要です
 
+## Semgrep MCP サーバー（オプション）
+
+テンプレートには [Semgrep MCP](https://github.com/semgrep/semgrep) サーバーの設定が `.mcp.json` に含まれています。Semgrep は 5,000 以上のルールでセキュリティ脆弱性やバグパターンを検出する静的解析ツールで、MCP 経由で Claude Code から直接スキャンを実行できます。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.mcp.json` | Semgrep MCP サーバーの設定（`semgrep` エントリ） |
+
+### 前提条件
+
+テンプレートのデフォルト設定（`.mcp.json`）は `uvx` 経由で `semgrep-mcp` を起動するため、`uv` のインストールが必要です。インストール方法は公式手順を参照してください:
+
+https://docs.astral.sh/uv/getting-started/installation/
+
+```bash
+# 例1: Homebrew でインストール（macOS）
+brew install uv
+
+# 例2: インストールスクリプトをダウンロードして内容を確認してから実行（macOS / Linux）
+curl -LsSf https://astral.sh/uv/install.sh -o install-uv.sh
+# 内容を確認してから実行
+sh install-uv.sh
+
+# インストール確認（.mcp.json と同じ引数で確認）
+uvx --from semgrep-mcp==0.1.0 semgrep-mcp --help
+```
+
+`uv` を使わずに Semgrep MCP をローカルインストールで起動する場合は、`.mcp.json` の `semgrep` エントリを以下のように変更してください:
+
+```json
+"semgrep": {
+  "command": "semgrep-mcp",
+  "args": []
+}
+```
+
+この場合、`pip install semgrep-mcp` で事前にインストールが必要です。
+
+### 動作確認
+
+Claude Code セッション内で Semgrep MCP のツールが利用可能か確認:
+
+```text
+# Claude Code セッション内で Semgrep のツール一覧を確認
+Semgrep のツールを使ってこのプロジェクトをスキャンして
+```
+
+ターミナルで MCP サーバーの起動を直接確認する場合（`.mcp.json` と同じ引数で確認）:
+
+```bash
+uvx --from semgrep-mcp==0.1.0 semgrep-mcp --help
+```
+
+### 無効化する場合
+
+`.mcp.json` から `semgrep` エントリを削除してください（他の MCP サーバー設定はそのまま残します）。
+
+### 推奨実行タイミング
+
+- **PR 作成前**: コミット前にセキュリティスキャンを実行し、脆弱性を早期に検出
+- **依存関係更新後**: `package.json` や `requirements.txt` 等の更新後にスキャンを実行
+- **リリース前**: リリースブランチのカットやタグ付け前に最終スキャンを実施
+
+### 注意事項
+
+- Semgrep はローカル実行のため、外部にコードを送信しません
+- 偽陽性が発生する場合がありますが、ブロッキングではなく情報提供として活用してください
+- `uvx` は Python パッケージの一時的な実行環境を提供します（`uv` のインストールが必要）
+
 ## リリース・バージョン管理
 
 テンプレートにはリリースノート自動作成とセマンティックバージョニングの仕組みが含まれています。
