@@ -41,14 +41,20 @@ GitHub Issue から開発を開始してください。
 **調査モードのフロー:**
 
 1. Issueの要件を分析し、調査対象・調査観点を整理する
-2. コードベースの調査、外部情報の収集など必要な調査を実施する
-3. 調査結果を整理し、具体的なアクションItem（実装タスク、バグ修正、リファクタリング等）を特定する
-4. 各アクションItemを `/issue-create` で個別のIssueとして起票する
-5. 元の調査Issueに調査結果のサマリーと起票したIssueへのリンクをコメントとして追記する:
+2. Web 調査が必要な場合、gemini-analyzer エージェントに委譲する:
+   - **gemini-analyzer の役割**: Web 上の事例・ツール・ベストプラクティスの収集（Gemini CLI のグラウンディング機能を活用）
+   - **Claude Code の役割**: 収集結果の評価・プロジェクトへの適用判断・Issue 起票
+   - gemini-analyzer エージェントを `subagent_type: "gemini-analyzer"` で起動し、Issueの調査観点を指示として渡す
+   - gemini-analyzer の Web 調査指示テンプレート（`gemini-analyzer.md` 参照）に沿い、調査テーマと観点を具体的に指定する
+   - 複数の調査観点がある場合は、観点ごとに個別の gemini-analyzer エージェントを並列起動してよい
+3. コードベースの調査を実施する（Claude Code 自身が担当）
+4. gemini-analyzer の調査結果と自身のコードベース調査結果を統合・評価し、具体的なアクションItem（実装タスク、バグ修正、リファクタリング等）を特定する
+5. 各アクションItemを `/issue-create` で個別のIssueとして起票する
+6. 元の調査Issueに調査結果のサマリーと起票したIssueへのリンクをコメントとして追記する:
    ```
    gh issue comment {issue番号} --body "調査結果サマリーとリンク"
    ```
-6. 元の調査Issueをクローズする:
+7. 元の調査Issueをクローズする:
    ```
    gh issue close {issue番号} --reason completed
    ```
