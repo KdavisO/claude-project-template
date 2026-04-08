@@ -36,7 +36,7 @@ This project uses Claude Code for implementation and self-review. Copilot serves
 
 ## Skip These
 
-- Code style / formatting (handled by linter)
+- Code style / formatting (unless it directly impacts readability or correctness)
 - Naming conventions (covered by self-review)
 - Import ordering
 - Comment style or documentation completeness
