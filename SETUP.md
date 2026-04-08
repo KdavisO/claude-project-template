@@ -109,14 +109,21 @@ resolve-library-id で React のドキュメントを検索して
 
 ### 前提条件
 
-テンプレートのデフォルト設定（`.mcp.json`）は `uvx` 経由で `semgrep-mcp` を起動するため、`uv` のインストールが必要です:
+テンプレートのデフォルト設定（`.mcp.json`）は `uvx` 経由で `semgrep-mcp` を起動するため、`uv` のインストールが必要です。インストール方法は公式手順を参照してください:
+
+https://docs.astral.sh/uv/getting-started/installation/
 
 ```bash
-# uv のインストール（macOS / Linux）
-curl -LsSf https://astral.sh/uv/install.sh | sh
+# 例1: Homebrew でインストール（macOS）
+brew install uv
 
-# インストール確認
-uvx semgrep-mcp --help
+# 例2: インストールスクリプトをダウンロードして内容を確認してから実行（macOS / Linux）
+curl -LsSf https://astral.sh/uv/install.sh -o install-uv.sh
+# 内容を確認してから実行
+sh install-uv.sh
+
+# インストール確認（.mcp.json と同じ引数で確認）
+uvx --from semgrep-mcp==0.1.0 semgrep-mcp --help
 ```
 
 `uv` を使わずに Semgrep MCP をローカルインストールで起動する場合は、`.mcp.json` の `semgrep` エントリを以下のように変更してください:
@@ -139,15 +146,21 @@ Claude Code セッション内で Semgrep MCP のツールが利用可能か確�
 Semgrep のツールを使ってこのプロジェクトをスキャンして
 ```
 
-ターミナルで MCP サーバーの起動を直接確認する場合:
+ターミナルで MCP サーバーの起動を直接確認する場合（`.mcp.json` と同じ引数で確認）:
 
 ```bash
-uvx semgrep-mcp --help
+uvx --from semgrep-mcp==0.1.0 semgrep-mcp --help
 ```
 
 ### 無効化する場合
 
 `.mcp.json` から `semgrep` エントリを削除してください（他の MCP サーバー設定はそのまま残します）。
+
+### 推奨実行タイミング
+
+- **PR 作成前**: コミット前にセキュリティスキャンを実行し、脆弱性を早期に検出
+- **依存関係更新後**: `package.json` や `requirements.txt` 等の更新後にスキャンを実行
+- **リリース前**: リリースブランチのカットやタグ付け前に最終スキャンを実施
 
 ### 注意事項
 
