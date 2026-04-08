@@ -169,6 +169,7 @@ PR作成は `/issue-pr` を使用する。マージ後のクリーンアップ�
 2. **Issue要件の分析・実装**:
    - ステータス更新: `phase: "implementing"`
    - Issueの要件を分析し、必要な変更を特定
+   - **Web 調査委譲の判断**: `web-delegation.md` の判断基準に基づき、実装に必要な外部情報があれば gemini-analyzer に委譲する（知識カットオフ後の情報、解決困難なエラー、設計判断の外部事例）。`gemini-analyzer.md` の用途別テンプレートを使用する
    - 実装を実行する（テスト・lint含む）
 3. **セルフレビュー・コミット**:
    - ステータス更新: `phase: "committing"`
