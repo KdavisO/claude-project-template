@@ -109,26 +109,40 @@ resolve-library-id で React のドキュメントを検索して
 
 ### 前提条件
 
-Semgrep のインストールが必要です:
+テンプレートのデフォルト設定（`.mcp.json`）は `uvx` 経由で `semgrep-mcp` を起動するため、`uv` のインストールが必要です:
 
 ```bash
-# macOS
-brew install semgrep
+# uv のインストール（macOS / Linux）
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# pip
-pip install semgrep
-
-# uvx（インストール不要で実行）
-uvx semgrep --version
+# インストール確認
+uvx semgrep-mcp --help
 ```
+
+`uv` を使わずに Semgrep MCP をローカルインストールで起動する場合は、`.mcp.json` の `semgrep` エントリを以下のように変更してください:
+
+```json
+"semgrep": {
+  "command": "semgrep-mcp",
+  "args": []
+}
+```
+
+この場合、`pip install semgrep-mcp` で事前にインストールが必要です。
 
 ### 動作確認
 
-Claude Code セッション内で Semgrep のツールが利用可能か確認:
+Claude Code セッション内で Semgrep MCP のツールが利用可能か確認:
 
 ```text
-# セッション内でセキュリティスキャンを実行
-このプロジェクトのセキュリティスキャンを実行して
+# Claude Code セッション内で Semgrep のツール一覧を確認
+Semgrep のツールを使ってこのプロジェクトをスキャンして
+```
+
+ターミナルで MCP サーバーの起動を直接確認する場合:
+
+```bash
+uvx semgrep-mcp --help
 ```
 
 ### 無効化する場合
