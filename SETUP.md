@@ -14,6 +14,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | ------------------------------ | -------------------------------------------- | -------------------------------------------------------------------------------- |
 | `.claude/CLAUDE.md`                    | 全体                                         | プロジェクト概要・技術スタック・仕様書参照・重要ファイル                         |
 | `.claude/settings.json`                | `Bash(pnpm *)` 等、`env` セクション          | パッケージマネージャに合わせて許可コマンド変更、Agent Teams有効化設定、LSPプラグイン設定 |
+| `.mcp.json`                            | `mcpServers` セクション                      | MCP サーバーの追加・削除（Context7 等）                                          |
 | `.claude/commands/issue-create.md`     | ラベル候補                                   | プロジェクトのラベル分類に合わせる                                               |
 | `.claude/commands/issue-start.md`      | `{project}-` プレフィックス                  | プロジェクト名に変更（worktreeディレクトリ名）                                   |
 | `.claude/commands/issue-pr.md`         | `{project}-review-` 一時ファイルパス         | プロジェクト名に変更                                                             |
@@ -55,6 +56,41 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 - `--max-issues` のデフォルト値は3（暴走防止）。現在のIssueを含む総数（例: `--max-issues 3` で最大3件処理）
 - エラー発生時は連続実行を停止し、ユーザーに報告
 - 各Issue間の競合チェックは `/suggest-next` が自動で実施
+
+## Context7 MCP サーバー（オプション）
+
+テンプレートには [Context7 MCP](https://github.com/upstash/context7) サーバーの設定が `.mcp.json` に含まれています。Context7 はライブラリの最新ドキュメントを LLM コンテキストに動的注入し、古い学習データに基づく API 誤用を防ぎます。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.mcp.json` | Context7 MCP サーバーの設定 |
+
+### 動作確認
+
+Claude Code セッション内で Context7 のツールが利用可能か確認:
+
+```text
+# セッション内で以下のようにライブラリドキュメントを参照できる
+resolve-library-id で React のドキュメントを検索して
+```
+
+### 無効化する場合
+
+`.mcp.json` から `context7` エントリを削除してください:
+
+```json
+{
+  "mcpServers": {}
+}
+```
+
+### 注意事項
+
+- Context7 がインデックスしていないマイナーライブラリには機能しない場合があります
+- `npx` による初回起動時にパッケージのダウンロードが発生します
+- Node.js（v18 以上）が必要です
 
 ## リリース・バージョン管理
 
