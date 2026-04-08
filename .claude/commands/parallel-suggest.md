@@ -183,6 +183,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
    fi
 
 4. Issue要件に基づいて実装
+   - 実装中に外部情報が必要な場合は `web-delegation.md` の判断基準に基づき gemini-analyzer に Web 調査を委譲する（`gemini-analyzer.md` の用途別テンプレートを使用）
 
 5. セルフレビュー・コミット（git-conventions.md に従う）
 
