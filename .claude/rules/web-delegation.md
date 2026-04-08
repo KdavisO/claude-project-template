@@ -1,3 +1,8 @@
+---
+description: 実装・エラー対応・設計判断時の gemini-analyzer への Web 調査委譲ガイドライン
+globs: []
+---
+
 # Web 調査委譲ガイドライン
 
 ## 概要
