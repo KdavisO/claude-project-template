@@ -78,11 +78,16 @@ resolve-library-id で React のドキュメントを検索して
 
 ### 無効化する場合
 
-`.mcp.json` から `context7` エントリを削除してください:
+`.mcp.json` から `context7` エントリを削除してください（他の MCP サーバー設定がある場合はそれらを残します）:
 
 ```json
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "other-server": {
+      "command": "npx",
+      "args": ["-y", "@example/other-mcp-server"]
+    }
+  }
 }
 ```
 
