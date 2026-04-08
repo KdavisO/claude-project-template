@@ -65,6 +65,7 @@ GitHub Issue から開発を開始してください。
 - **コード変更・PRは作成しない** — 成果物は新たなIssueのみ
 - **ブランチの作成・worktreeの作成は不要** — 調査はメインリポジトリ上でそのまま実施する
 - `--parallel` / `--auto` / `--continuous` / `--max-issues` / `--team` フラグは調査モードではすべて無視される（調査モードのフローが優先）。共通手順1のフラグ検証（`--parallel` なしの `--auto` はエラー、`--continuous` なしの `--max-issues` はエラー等）も、`research` ラベルが検知された場合はスキップする
+- **`/parallel-suggest` との関係**: `/parallel-suggest` は `research` ラベル Issue を並列実装セットから除外する（調査モードはコード実装を伴わないため適切）。gemini-analyzer への Web 調査委譲は本調査モードフローに組み込まれているため、`/issue-start` で `research` ラベル Issue を開始すれば、経緯（手動実行・`/suggest-next` 経由等）を問わず自動的に適用される
 
 ## 通常モード（`--parallel` なし）
 

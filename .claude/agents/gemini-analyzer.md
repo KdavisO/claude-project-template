@@ -1,6 +1,6 @@
 ---
 name: gemini-analyzer
-description: Gemini CLI を使った大規模コードベース解析エージェント。Claude Code のコンテキストウィンドウを超えるタスク（モノレポ全体の解析、数千ファイルのスキャン等）をオフロードする。
+description: Gemini CLI を使った大規模コードベース解析・Web 調査エージェント。Claude Code のコンテキストウィンドウを超えるタスク（モノレポ全体の解析、数千ファイルのスキャン等）のオフロードに加え、グラウンディング（Web検索）機能による外部情報収集を担う。
 model: sonnet
 tools:
   - Bash
