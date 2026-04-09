@@ -194,12 +194,17 @@ export OPENAI_API_KEY="your-api-key-here"
 
 ### 設定パラメータ
 
-`.mcp.json` の `env` セクションで以下のパラメータを調整できます:
+環境変数で以下のパラメータを調整できます（未設定時はデフォルト値 `medium` が使用されます）:
 
-| パラメータ | デフォルト | 説明 |
+| 環境変数 | デフォルト | 説明 |
 | --- | --- | --- |
 | `SEARCH_CONTEXT_SIZE` | `medium` | 検索コンテキストのサイズ（`low` / `medium` / `high`）。`high` にするとより多くの情報を取得するがコストが増加 |
 | `REASONING_EFFORT` | `medium` | 推論の深さ（`low` / `medium` / `high`）。`high` にするとより深い分析を行うがコストが増加 |
+
+```bash
+# 例: 推論の深さを high に変更する場合
+export REASONING_EFFORT="high"
+```
 
 ### 動作確認
 

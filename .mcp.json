@@ -20,8 +20,8 @@
       "args": ["-y", "o3-search-mcp@1"],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
-        "SEARCH_CONTEXT_SIZE": "medium",
-        "REASONING_EFFORT": "medium"
+        "SEARCH_CONTEXT_SIZE": "${SEARCH_CONTEXT_SIZE:-medium}",
+        "REASONING_EFFORT": "${REASONING_EFFORT:-medium}"
       }
     }
   }
