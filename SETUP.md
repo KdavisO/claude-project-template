@@ -785,7 +785,7 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 | スキル | 必要な外部ツール | インストール方法 |
 | --- | --- | --- |
 | `differential-review` | なし（`git` のみ） | — |
-| `static-analysis` | Semgrep CLI（推奨）、CodeQL CLI（任意）、jq（推奨） | `pip install semgrep` / `brew install semgrep` / `brew install jq` |
+| `static-analysis` | Semgrep CLI（推奨）、CodeQL CLI（任意）、jq（推奨） | `pip install semgrep` / `brew install semgrep` / `brew install jq` / CodeQL CLI: [GitHub Releases](https://github.com/github/codeql-cli-binaries/releases) |
 | `second-opinion` | OpenAI Codex CLI または Google Gemini CLI（少なくとも1つ） | `npm i -g @openai/codex` / `npm i -g @google/gemini-cli` |
 
 **`differential-review`** は外部ツール不要で即座に利用できます。`static-analysis` と `second-opinion` は外部ツールのインストールが必要なため、段階的に導入することを推奨します。

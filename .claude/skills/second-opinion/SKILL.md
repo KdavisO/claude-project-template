@@ -46,42 +46,53 @@ fi
 
 ### 2. レビュー対象の準備
 
+以下のいずれか1つを選んで実行する（3つは用途の異なる代替手段）:
+
 ```bash
 # 一意な一時ファイルを作成（衝突・漏洩防止）
 REVIEW_DIFF="$(mktemp /tmp/review-diff-XXXXXX.patch)"
 chmod 600 "$REVIEW_DIFF"
+```
 
-# 未コミット変更のレビュー
+**未コミット変更のレビュー:**
+```bash
 git diff > "$REVIEW_DIFF"
+```
 
-# ブランチ差分のレビュー
+**ブランチ差分のレビュー:**
+```bash
 git diff origin/main...HEAD > "$REVIEW_DIFF"
+```
 
-# 特定コミットのレビュー
+**特定コミットのレビュー:**
+```bash
 git show {commit-sha} > "$REVIEW_DIFF"
 ```
 
 ### 3. Codex CLI によるレビュー
 
+差分はファイルパスで渡す（引数展開すると引数長制限やプロセス引数への露出リスクがある）:
+
 ```bash
 # ヘッドレス実行（自動承認モード）
-codex exec "以下のコード差分をセキュリティ観点でレビューしてください。
+# --file オプションでファイルパスを渡す
+codex exec --file "$REVIEW_DIFF" "添付のコード差分をセキュリティ観点でレビューしてください。
 認証・暗号・入力バリデーション・外部呼び出しに注目し、
-Critical/Important/Informational の3段階で報告してください。
-
-$(cat "$REVIEW_DIFF")"
+Critical/Important/Informational の3段階で報告してください。"
 ```
+
+> **注意:** `--file` オプションが利用できない場合は stdin 経由（`cat "$REVIEW_DIFF" | codex exec ...`）を検討する。`$(cat ...)` による引数展開は、大きな差分で引数長制限に達するリスクや、`ps` 等で差分内容が露出するリスクがあるため避ける。
 
 ### 4. Gemini CLI によるレビュー
 
 ```bash
-# プロンプトモードで実行
-gemini -p "以下のコード差分をセキュリティ観点でレビューしてください。
+# stdin 経由で差分を渡す
+cat "$REVIEW_DIFF" | gemini -p "以下の stdin のコード差分をセキュリティ観点でレビューしてください。
 認証・暗号・入力バリデーション・外部呼び出しに注目し、
-Critical/Important/Informational の3段階で報告してください。
-
-$(cat "$REVIEW_DIFF")"
+Critical/Important/Informational の3段階で報告してください。"
 ```
+
+> **注意:** gemini CLI が stdin を読み取らないバージョンの場合は `--file` オプション等を確認する。`$(cat ...)` による引数展開は避けること（理由は Codex の注意事項と同じ）。
 
 ### 5. 結果の統合
 
