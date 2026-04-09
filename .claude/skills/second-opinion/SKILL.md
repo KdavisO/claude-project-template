@@ -47,14 +47,18 @@ fi
 ### 2. レビュー対象の準備
 
 ```bash
+# 一意な一時ファイルを作成（衝突・漏洩防止）
+REVIEW_DIFF="$(mktemp /tmp/review-diff-XXXXXX.patch)"
+chmod 600 "$REVIEW_DIFF"
+
 # 未コミット変更のレビュー
-git diff > /tmp/review-diff.patch
+git diff > "$REVIEW_DIFF"
 
 # ブランチ差分のレビュー
-git diff origin/main...HEAD > /tmp/review-diff.patch
+git diff origin/main...HEAD > "$REVIEW_DIFF"
 
 # 特定コミットのレビュー
-git show {commit-sha} > /tmp/review-diff.patch
+git show {commit-sha} > "$REVIEW_DIFF"
 ```
 
 ### 3. Codex CLI によるレビュー
@@ -65,7 +69,7 @@ codex exec "以下のコード差分をセキュリティ観点でレビュー�
 認証・暗号・入力バリデーション・外部呼び出しに注目し、
 Critical/Important/Informational の3段階で報告してください。
 
-$(cat /tmp/review-diff.patch)"
+$(cat "$REVIEW_DIFF")"
 ```
 
 ### 4. Gemini CLI によるレビュー
@@ -76,7 +80,7 @@ gemini -p "以下のコード差分をセキュリティ観点でレビューし
 認証・暗号・入力バリデーション・外部呼び出しに注目し、
 Critical/Important/Informational の3段階で報告してください。
 
-$(cat /tmp/review-diff.patch)"
+$(cat "$REVIEW_DIFF")"
 ```
 
 ### 5. 結果の統合
@@ -124,4 +128,4 @@ $(cat /tmp/review-diff.patch)"
 - 外部LLMにコードを送信するため、機密性の高いコードでは使用を控える
 - Codex/Gemini のレスポンスは参考意見として扱い、最終判断は自身で行う
 - API コストが発生するため、頻繁な使用は避ける
-- `/tmp/review-diff.patch` は一時ファイルのため、使用後に削除する
+- レビュー完了後は一時ファイルを削除する（`rm "$REVIEW_DIFF"`）

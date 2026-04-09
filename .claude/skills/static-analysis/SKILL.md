@@ -17,7 +17,7 @@ Trail of Bits の Testing Handbook（https://appsec.guide/docs/static-analysis/�
 
 ## 前提条件
 
-| ツール | 必須/任意 | インストール |
+| ツール | 要否 | インストール |
 | --- | --- | --- |
 | Semgrep CLI | 推奨 | `pip install semgrep` または `brew install semgrep` |
 | CodeQL CLI | 任意 | [GitHub CodeQL CLI](https://github.com/github/codeql-cli-binaries/releases) |
@@ -55,14 +55,15 @@ semgrep scan \
 ### 2. CodeQL スキャン（任意）
 
 ```bash
-# 前提条件チェック
-command -v codeql >/dev/null 2>&1 || { echo "Info: codeql が未インストールです。Semgrep のみで解析します。"; exit 0; }
+if command -v codeql >/dev/null 2>&1; then
+  # データベース構築
+  codeql database create codeql-db --language={言語} --source-root=.
 
-# データベース構築
-codeql database create codeql-db --language={言語} --source-root=.
-
-# セキュリティクエリ実行
-codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif -- codeql/{言語}-queries:codeql-suites/{言語}-security-extended.qls
+  # セキュリティクエリ実行
+  codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif -- codeql/{言語}-queries:codeql-suites/{言語}-security-extended.qls
+else
+  echo "Info: codeql が未インストールです。Semgrep のみで解析します。"
+fi
 ```
 
 対応言語: python, javascript, go, java, cpp, csharp, ruby, swift
