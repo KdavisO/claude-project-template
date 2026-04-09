@@ -27,7 +27,14 @@ This project uses Claude Code for implementation and self-review. Copilot serves
 - Overly broad public interfaces (exposing internal details)
 - Unnecessary coupling between modules
 
-### 4. Security
+### 4. Type Safety (TypeScript projects)
+
+- Usage of `any` type (should use specific types or `unknown`)
+- Missing or incorrect type annotations on public interfaces
+- Type assertions (`as`) that may hide type errors
+- Unsafe type narrowing without proper guards
+
+### 5. Security
 
 - OWASP Top 10 vulnerabilities (injection, XSS, broken auth, etc.)
 - API key or secret exposure in code or config
