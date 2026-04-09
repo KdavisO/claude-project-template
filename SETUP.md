@@ -536,7 +536,7 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
 
 ## PostToolUse 品質ゲートフック（オプション）
 
-PostToolUse フックを使い、コミット前の lint やファイル編集後の型チェックを自動実行できます。エラーがあれば Claude にフィードバックされ、自動修正が促されます。
+PostToolUse フックを使い、コミット時（実行直後）の lint やファイル編集後の型チェックを自動実行できます。エラーがあれば Claude にフィードバックされ、自動修正が促されます。
 
 ### Phase 1: コミット時 lint 自動実行
 
@@ -551,7 +551,7 @@ PostToolUse フックを使い、コミット前の lint やファイル編集�
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then pnpm lint --quiet 2>&1 || true; fi",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then pnpm lint --quiet 2>&1 || true; fi; true",
             "timeout": 30
           }
         ]
@@ -574,7 +574,7 @@ PostToolUse フックを使い、コミット前の lint やファイル編集�
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(ts|tsx)'; then pnpm tsc --noEmit 2>&1 | head -20 || true; fi",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(ts|tsx)'; then pnpm tsc --noEmit 2>&1 | head -20 || true; fi; true",
             "timeout": 30
           }
         ]

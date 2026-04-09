@@ -7,7 +7,7 @@ globs: []
 
 ## 概要
 
-`PostToolUse` フックを利用して、コミット前に lint・型チェックを自動実行する。エラーがあれば stdout でフィードバックし、Claude が自動修正する。
+`PostToolUse` フックを利用して、コミット時（実行直後）やファイル編集後に lint・型チェックを自動実行する。エラーがあれば stdout でフィードバックし、Claude が自動修正する。
 
 ## reactive-hooks.md との住み分け
 
@@ -33,7 +33,7 @@ globs: []
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then pnpm lint --quiet 2>&1 || true; fi",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then pnpm lint --quiet 2>&1 || true; fi; true",
             "timeout": 30
           }
         ]
@@ -65,7 +65,7 @@ globs: []
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(ts|tsx)'; then pnpm tsc --noEmit 2>&1 | head -20 || true; fi",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(ts|tsx)'; then pnpm tsc --noEmit 2>&1 | head -20 || true; fi; true",
             "timeout": 30
           }
         ]
@@ -97,7 +97,8 @@ globs: []
 
 ### エラーハンドリング
 
-- フックコマンドは `|| true` で終了コードを 0 にする（フック失敗によるセッション中断を防止）
+- フックコマンドは終了コードが常に 0 になるように構成する（フック失敗によるセッション中断を防止）
+- `|| true` を使う場合は一部のコマンドではなくフック全体に効く位置に置く。条件分岐を使う場合も、末尾に `; true` を付ける、または `else :` を入れるなどして、条件不一致時を含めて必ず 0 で終了させる
 - lint/型チェックのエラーは stdout 経由で Claude にフィードバックされるため、exit code による制御は不要
 - `2>&1` で stderr も stdout にマージし、エラーメッセージが確実に Claude に伝わるようにする
 
