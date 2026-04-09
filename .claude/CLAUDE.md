@@ -68,10 +68,10 @@ docs/
 <!-- 例:
 ```typescript
 // NG: any を使用
-function fetchData(id: any): any { ... }
+function fetchData(id: any): any { /* ... */ }
 
 // OK: 具体的な型を指定
-function fetchData(id: string): Promise<User> { ... }
+function fetchData(id: string): Promise<User> { /* ... */ }
 
 // NG: 型アサーション（as）の乱用
 const user = data as User;
@@ -109,7 +109,7 @@ throw new Error('エラーが発生しました');
 throw new Error(`認証失敗 (token: ${token}, email: ${email})`);
 
 // すべきでないこと: エラーを握りつぶす
-try { ... } catch (e) { /* 何もしない */ }
+try { /* ... */ } catch (e) { /* 何もしない */ }
 ```
 -->
 
