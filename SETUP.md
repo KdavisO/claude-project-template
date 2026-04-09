@@ -131,16 +131,18 @@ echo 'BRAVE_API_KEY=your-api-key-here' >> .env
 echo '.env' >> .gitignore
 
 # すでに .env を Git 管理している場合は追跡対象から外す
-git rm --cached .env
+if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+  git rm --cached .env
+fi
 ```
 
 ### 動作確認
 
-Claude Code セッション内で Brave Search MCP のツールが利用可能か確認:
+Claude Code セッション内で Brave Search MCP のツール `brave_web_search` が利用可能か確認:
 
 ```text
-# セッション内で以下のように Web 検索を実行できる
-Brave Search で Next.js App Router middleware を検索して
+# セッション内で brave_web_search を使って Web 検索を実行する例
+brave_web_search で Next.js App Router middleware を検索して
 ```
 
 ### 使い分け

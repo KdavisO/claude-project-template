@@ -1,5 +1,5 @@
 ---
-description: 実装・エラー対応・設計判断時の gemini-analyzer への Web 調査委譲ガイドライン
+description: 実装・エラー対応・設計判断時の Web 検索手段（Brave Search MCP / gemini-analyzer）の使い分けガイドライン
 globs: []
 ---
 
