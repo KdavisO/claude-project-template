@@ -46,7 +46,23 @@ globs: []
 - 単純な構文エラーやタイポなど、原因が明白な場合
 - 既にプロジェクト内のドキュメント（`docs/`、`README.md` 等）に答えがある場合
 
-## 委譲の手順
+## Brave Search MCP の利用手順
+
+Brave Search MCP は `.mcp.json` で設定済みのため、Claude Code セッション内で直接ツールを呼び出せる。
+
+1. `brave_web_search` ツールを使用して検索クエリを実行する
+2. 検索結果から必要な情報を抽出し、実装・修正に反映する
+
+```text
+# 使用例
+brave_web_search で "Next.js middleware redirect loop" を検索
+```
+
+※ `BRAVE_API_KEY` 環境変数が設定されている必要がある（設定手順は `SETUP.md` を参照）
+
+## gemini-analyzer への委譲手順
+
+大規模調査が必要な場合は gemini-analyzer エージェントに委譲する:
 
 1. gemini-analyzer エージェントを `subagent_type: "gemini-analyzer"` で起動する
 2. 用途に応じた指示テンプレート（`gemini-analyzer.md` の「用途別テンプレート」セクション参照）を使用し、調査テーマと観点を具体的に指定する

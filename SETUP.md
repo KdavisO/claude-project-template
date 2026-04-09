@@ -117,12 +117,21 @@ Brave Search API キーが必要です。以下の手順で取得・設定して
 3. API キーを取得
 4. 環境変数 `BRAVE_API_KEY` にキーを設定:
 
+> **注意:** `.env` に追記しただけでは、Claude Code のプロセスがその `.env` を自動ロードしない限り、Brave Search MCP サーバーには渡りません。テンプレートの `.claude/settings.json` には `.env` 読み込み hook はデフォルトで含まれていないため、通常は **Claude Code を起動する前に** `export BRAVE_API_KEY=...` を実行してください。`.env` を使う方法は、`direnv` や独自 hook などで起動前に環境変数へロードされる構成の場合に限ります。
+
 ```bash
-# .env ファイルに追加（プロジェクトで .env を使用している場合）
+# 推奨: Claude Code を起動する前に現在のシェルで設定
+export BRAVE_API_KEY="your-api-key-here"
+
+# .env を使う場合は、direnv / hooks 等で Claude Code 起動前に
+# この値が環境変数としてロードされるようにしておく
 echo 'BRAVE_API_KEY=your-api-key-here' >> .env
 
-# または、シェルの設定ファイルに追加
-export BRAVE_API_KEY="your-api-key-here"
+# 重要: .env は Git にコミットしない
+echo '.env' >> .gitignore
+
+# すでに .env を Git 管理している場合は追跡対象から外す
+git rm --cached .env
 ```
 
 ### 動作確認
@@ -131,7 +140,7 @@ Claude Code セッション内で Brave Search MCP のツールが利用可能�
 
 ```text
 # セッション内で以下のように Web 検索を実行できる
-Brave Search で "Next.js App Router middleware" を検索して
+Brave Search で Next.js App Router middleware を検索して
 ```
 
 ### 使い分け
