@@ -690,7 +690,28 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 
 ## skills/ ディレクトリ
 
-`skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。テンプレートでは `.gitkeep` のみが含まれています。
+`skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。
+
+### テンプレート同梱スキル
+
+テンプレートには [obra/superpowers](https://github.com/obra/superpowers) にインスパイアされた以下のスキルが含まれています。各スキルは `.claude/skills/{スキル名}/SKILL.md` に配置されており、Claude Code が自動的に認識します。
+
+| スキル | 説明 | トリガー |
+| --- | --- | --- |
+| `test-driven-development` | RED-GREEN-REFACTOR サイクルによる TDD ワークフロー | 機能実装・バグ修正の開始時 |
+| `requesting-code-review` | サブエージェントによるコードレビュー（Critical/Important/Minor 三段階評価） | 主要機能完了時・PR 作成前 |
+| `verification-before-completion` | 完了宣言前の実行証拠確認（推測での完了宣言を防止） | 「完了しました」と宣言する前 |
+
+#### 既存フローとの関係
+
+- **test-driven-development** → `git-conventions.md` のセルフレビュー「テスト十分性」項目の根拠となる
+- **requesting-code-review** → セルフレビュー（毎コミット）と `/review-respond`（PR 後の Copilot レビュー対応）の間を埋める、PR 作成前のサブエージェントレビュー
+- **verification-before-completion** → セルフレビューチェックリストの各項目に対する検証品質を担保する補完スキル
+
+#### カスタマイズ
+
+- 不要なスキルはディレクトリごと削除してください
+- プロジェクト固有のスキルを追加する場合は、同じ形式（`skills/{スキル名}/SKILL.md`）で配置してください
 
 ## LSP プラグイン
 
