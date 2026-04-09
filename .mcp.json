@@ -14,6 +14,15 @@
       "env": {
         "BRAVE_API_KEY": "${BRAVE_API_KEY}"
       }
+    },
+    "o3-search": {
+      "command": "npx",
+      "args": ["-y", "o3-search-mcp@1"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "SEARCH_CONTEXT_SIZE": "medium",
+        "REASONING_EFFORT": "medium"
+      }
     }
   }
 }

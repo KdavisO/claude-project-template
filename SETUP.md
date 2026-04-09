@@ -150,6 +150,7 @@ brave_web_search で Next.js App Router middleware を検索して
 | 用途 | 手段 |
 | --- | --- |
 | 軽い検索（エラー解決、API仕様確認、単発の事実確認） | Brave Search MCP |
+| 推論付き検索（技術比較、根本原因分析、設計判断） | o3-search-mcp |
 | 大規模調査（網羅的スキャン、複数観点の調査） | gemini-analyzer |
 
 詳細は `.claude/rules/web-delegation.md` を参照してください。
@@ -162,6 +163,72 @@ brave_web_search で Next.js App Router middleware を検索して
 
 - 無料プランは月 2,000 クエリの制限があります。上限を超えた場合は API エラーが返されます
 - `BRAVE_API_KEY` 環境変数が未設定の場合、MCP サーバーの起動に失敗します
+- `npx` による初回起動時にパッケージのダウンロードが発生します
+- Node.js（v18 以上）が必要です
+
+## o3-search-mcp サーバー（オプション）
+
+テンプレートには [o3-search-mcp](https://github.com/yoshiko-pg/o3-search-mcp) サーバーの設定が `.mcp.json` に含まれています。OpenAI o3 の推論能力を活用した Web 検索を MCP 経由で Claude Code から実行でき、技術比較調査やエラーの根本原因分析など、単純検索では解決しない複雑な検索に適しています。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.mcp.json` | o3-search-mcp サーバーの設定（`o3-search` エントリ） |
+| `.claude/rules/web-delegation.md` | Brave Search MCP / o3-search-mcp / gemini-analyzer の3段階使い分け基準 |
+
+### 前提条件
+
+OpenAI API キー（**Tier 4 以上**）が必要です。以下の手順で取得・設定してください:
+
+1. [OpenAI Platform](https://platform.openai.com/) にアクセスし、アカウントを作成
+2. API キーを取得（Tier 4 以上の API アクセスが必要。Tier 確認: [Usage Tiers](https://platform.openai.com/docs/guides/rate-limits/usage-tiers)）
+3. 環境変数 `OPENAI_API_KEY` にキーを設定:
+
+> **注意:** `.env` に追記しただけでは、Claude Code のプロセスがその `.env` を自動ロードしない限り、o3-search-mcp サーバーには渡りません。通常は **Claude Code を起動する前に** `export OPENAI_API_KEY=...` を実行してください。
+
+```bash
+# 推奨: Claude Code を起動する前に現在のシェルで設定
+export OPENAI_API_KEY="your-api-key-here"
+```
+
+### 設定パラメータ
+
+`.mcp.json` の `env` セクションで以下のパラメータを調整できます:
+
+| パラメータ | デフォルト | 説明 |
+| --- | --- | --- |
+| `SEARCH_CONTEXT_SIZE` | `medium` | 検索コンテキストのサイズ（`low` / `medium` / `high`）。`high` にするとより多くの情報を取得するがコストが増加 |
+| `REASONING_EFFORT` | `medium` | 推論の深さ（`low` / `medium` / `high`）。`high` にするとより深い分析を行うがコストが増加 |
+
+### 動作確認
+
+Claude Code セッション内で o3-search-mcp のツール `web_search` が利用可能か確認:
+
+```text
+# セッション内で web_search を使って推論付き Web 検索を実行する例
+web_search で React Server Components のパフォーマンス特性を調査して
+```
+
+### 使い分け
+
+| 用途 | 手段 |
+| --- | --- |
+| 軽い検索（エラー解決、API仕様確認、単発の事実確認） | Brave Search MCP |
+| 推論付き検索（技術比較、根本原因分析、設計判断） | o3-search-mcp |
+| 大規模調査（網羅的スキャン、複数観点の調査） | gemini-analyzer |
+
+詳細は `.claude/rules/web-delegation.md` を参照してください。
+
+### 無効化する場合
+
+`.mcp.json` から `o3-search` エントリを削除してください（他の MCP サーバー設定はそのまま残します）。
+
+### 注意事項
+
+- OpenAI API の利用料金が発生します（約 $0.05〜$0.15/回、設定により変動）
+- **Tier 4 以上**の API アクセスが必要です。Tier が不足している場合はエラーが返されます
+- `OPENAI_API_KEY` 環境変数が未設定の場合、MCP サーバーの起動に失敗します
 - `npx` による初回起動時にパッケージのダウンロードが発生します
 - Node.js（v18 以上）が必要です
 
