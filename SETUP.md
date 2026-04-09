@@ -688,9 +688,9 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 - **CLAUDE.md の参照パターン**: `.claude/CLAUDE.md` の「仕様書」セクションをプロジェクトの運用に合わせて編集
 - **テンプレート同期**: `docs/specs/` は既に `.templatesyncignore` で除外済み。downstream で同期したい場合は、`.templatesyncignore` から `docs/specs/` の行を削除
 
-## skills/ ディレクトリ
+## `.claude/skills/` ディレクトリ
 
-`skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。
+`.claude/skills/` にはプロジェクト固有のスキルを配置します（例: Supabaseマイグレーション用スキル等）。
 
 ### テンプレート同梱スキル
 
@@ -704,14 +704,14 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 
 #### 既存フローとの関係
 
-- **test-driven-development** → `git-conventions.md` のセルフレビュー「テスト十分性」項目の根拠となる
+- **test-driven-development** → `.claude/rules/git-conventions.md` のセルフレビュー「テスト十分性」項目の根拠となる
 - **requesting-code-review** → セルフレビュー（毎コミット）と `/review-respond`（PR 後の Copilot レビュー対応）の間を埋める、PR 作成前のサブエージェントレビュー
 - **verification-before-completion** → セルフレビューチェックリストの各項目に対する検証品質を担保する補完スキル
 
 #### カスタマイズ
 
 - 不要なスキルはディレクトリごと削除してください
-- プロジェクト固有のスキルを追加する場合は、同じ形式（`skills/{スキル名}/SKILL.md`）で配置してください
+- プロジェクト固有のスキルを追加する場合は、同じ形式（`.claude/skills/{スキル名}/SKILL.md`）で配置してください
 
 ## LSP プラグイン
 

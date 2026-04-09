@@ -74,7 +74,7 @@ git diff origin/main...HEAD  # PR 前: ブランチ全体の差分を確認
 - 「tsc --noEmit を実行し、型エラーがないことを確認しました」
 - 「git diff で変更内容を確認し、意図通りの差分であることを確認しました」
 
-## git-conventions.md との関係
+## `.claude/rules/git-conventions.md` との関係
 
 - セルフレビューチェックリストの各項目は、このスキルの検証結果に基づいて記入する
 - 「確認しました」と記入する場合、実際にコマンドを実行した証拠があること

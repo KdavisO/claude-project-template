@@ -64,7 +64,7 @@ Agent:
 
 ## 既存フローとの関係
 
-### git-conventions.md のセルフレビューとの使い分け
+### `.claude/rules/git-conventions.md` のセルフレビューとの使い分け
 
 | 観点 | セルフレビュー | コードレビュースキル |
 | --- | --- | --- |
