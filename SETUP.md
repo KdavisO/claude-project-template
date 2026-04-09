@@ -97,6 +97,74 @@ resolve-library-id で React のドキュメントを検索して
 - `npx` による初回起動時にパッケージのダウンロードが発生します
 - Node.js（v18 以上）が必要です
 
+## Brave Search MCP サーバー（オプション）
+
+テンプレートには [Brave Search MCP](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search) サーバーの設定が `.mcp.json` に含まれています。Brave Search は Web 検索 API を MCP 経由で Claude Code から直接利用でき、エラー解決や API 仕様確認などの軽量な検索に適しています。月 2,000 クエリまで無料で利用可能です。
+
+### 含まれるファイル
+
+| ファイル | 説明 |
+| --- | --- |
+| `.mcp.json` | Brave Search MCP サーバーの設定（`brave-search` エントリ） |
+| `.claude/rules/web-delegation.md` | Brave Search MCP と gemini-analyzer の使い分け基準 |
+
+### 前提条件
+
+Brave Search API キーが必要です。以下の手順で取得・設定してください:
+
+1. [Brave Search API](https://brave.com/search/api/) にアクセスし、アカウントを作成
+2. 「Free」プラン（月 2,000 クエリ無料）を選択
+3. API キーを取得
+4. 環境変数 `BRAVE_API_KEY` にキーを設定:
+
+> **注意:** `.env` に追記しただけでは、Claude Code のプロセスがその `.env` を自動ロードしない限り、Brave Search MCP サーバーには渡りません。テンプレートの `.claude/settings.json` には `.env` 読み込み hook はデフォルトで含まれていないため、通常は **Claude Code を起動する前に** `export BRAVE_API_KEY=...` を実行してください。`.env` を使う方法は、`direnv` や独自 hook などで起動前に環境変数へロードされる構成の場合に限ります。
+
+```bash
+# 推奨: Claude Code を起動する前に現在のシェルで設定
+export BRAVE_API_KEY="your-api-key-here"
+
+# .env を使う場合は、direnv / hooks 等で Claude Code 起動前に
+# この値が環境変数としてロードされるようにしておく
+echo 'BRAVE_API_KEY=your-api-key-here' >> .env
+
+# 重要: .env は Git にコミットしない
+echo '.env' >> .gitignore
+
+# すでに .env を Git 管理している場合は追跡対象から外す
+if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+  git rm --cached .env
+fi
+```
+
+### 動作確認
+
+Claude Code セッション内で Brave Search MCP のツール `brave_web_search` が利用可能か確認:
+
+```text
+# セッション内で brave_web_search を使って Web 検索を実行する例
+brave_web_search で Next.js App Router middleware を検索して
+```
+
+### 使い分け
+
+| 用途 | 手段 |
+| --- | --- |
+| 軽い検索（エラー解決、API仕様確認、単発の事実確認） | Brave Search MCP |
+| 大規模調査（網羅的スキャン、複数観点の調査） | gemini-analyzer |
+
+詳細は `.claude/rules/web-delegation.md` を参照してください。
+
+### 無効化する場合
+
+`.mcp.json` から `brave-search` エントリを削除してください（他の MCP サーバー設定はそのまま残します）。
+
+### 注意事項
+
+- 無料プランは月 2,000 クエリの制限があります。上限を超えた場合は API エラーが返されます
+- `BRAVE_API_KEY` 環境変数が未設定の場合、MCP サーバーの起動に失敗します
+- `npx` による初回起動時にパッケージのダウンロードが発生します
+- Node.js（v18 以上）が必要です
+
 ## Semgrep MCP サーバー（オプション）
 
 テンプレートには [Semgrep MCP](https://github.com/semgrep/semgrep) サーバーの設定が `.mcp.json` に含まれています。Semgrep は 5,000 以上のルールでセキュリティ脆弱性やバグパターンを検出する静的解析ツールで、MCP 経由で Claude Code から直接スキャンを実行できます。
