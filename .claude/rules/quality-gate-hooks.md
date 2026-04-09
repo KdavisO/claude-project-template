@@ -33,7 +33,7 @@ globs: []
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then pnpm lint --quiet 2>&1 || true; fi; true",
+            "command": "if printf '%s' \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then pnpm lint --quiet 2>&1 || true; fi; true",
             "timeout": 30
           }
         ]
@@ -65,7 +65,7 @@ globs: []
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(ts|tsx)'; then pnpm tsc --noEmit 2>&1 | head -20 || true; fi; true",
+            "command": "if printf '%s' \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(ts|tsx)'; then pnpm tsc --noEmit 2>&1 | head -20 || true; fi; true",
             "timeout": 30
           }
         ]
