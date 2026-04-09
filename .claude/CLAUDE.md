@@ -100,7 +100,7 @@ function isUser(data: unknown): data is User {
 <!-- 例:
 ```typescript
 // すべきこと: 安全な識別子を含める
-throw new AppError(`ユーザー取得に失敗 (userId: ${userId})`, { cause: error });
+throw new AppError(`ユーザー取得に失敗 (userId: ${userId})`, { cause: e });
 
 // すべきでないこと: 曖昧なエラーメッセージ
 throw new Error('エラーが発生しました');
