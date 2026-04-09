@@ -24,6 +24,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.claude/rules/git-conventions.md`     | `{github_username}`, reviewer                | assignee/reviewer を変更                                                         |
 | `.claude/rules/project-structure.md`   | 全体                                         | プロジェクト構造に合わせて書き換え                                               |
 | `.claude/rules/reactive-hooks.md`      | ユースケース・スクリプト例                   | プロジェクトのディレクトリ構成・環境管理方法に合わせる                           |
+| `.claude/rules/quality-gate-hooks.md`  | lint・型チェックコマンド、タイムアウト値     | プロジェクトの lint/型チェック設定に合わせてカスタマイズ                          |
 | `.github/release.yml`                  | カテゴリ・ラベル                             | プロジェクトのラベルに合わせてリリースノートのカテゴリを変更                     |
 | `.claudeignore`                        | 除外パターン                                 | プロジェクトの技術スタックに合わせて不要なパターンを削除・追加                   |
 | `.github/copilot-instructions.md`      | Focus Areas・Skip These                      | プロジェクトのレビュー方針・セキュリティ要件に合わせてカスタマイズ               |
@@ -532,6 +533,69 @@ Claude がディレクトリを移動するたびに `direnv export bash` を実
 - `.env` の直接 source は簡易的な方法であり、複雑な環境設定には direnv の使用を推奨
 - `env` コマンドで全環境変数を出力すると機密情報がログに残る可能性があるため、必要なキーのみを明示的に出力すること
 - フック活用のベストプラクティスは `.claude/rules/reactive-hooks.md` を参照
+
+## PostToolUse 品質ゲートフック（オプション）
+
+PostToolUse フックを使い、コミット時（実行直後）の lint やファイル編集後の型チェックを自動実行できます。エラーがあれば Claude にフィードバックされ、自動修正が促されます。
+
+### Phase 1: コミット時 lint 自動実行
+
+`Bash` ツールで `git commit` 実行後に `pnpm lint` を自動実行します:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if printf '%s' \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then pnpm lint --quiet 2>&1 || true; fi; true",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Phase 2: TypeScript 型チェック
+
+`Edit` / `Write` ツールで `.ts` / `.tsx` ファイル編集後に `tsc --noEmit` を自動実行します:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if printf '%s' \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(ts|tsx)'; then pnpm tsc --noEmit 2>&1 | head -20 || true; fi; true",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### 導入手順
+
+1. `.claude/settings.local.json`（プロジェクトローカル設定）の `hooks.PostToolUse` セクションに上記の設定を追記する（テンプレート管理の `.claude/settings.json` を上書きしないよう注意）
+2. まず Phase 1（lint）のみ導入し、動作を確認する
+3. Phase 2（型チェック）はプロジェクトに TypeScript がある場合のみ追加する
+4. タイムアウト値（デフォルト 30秒）はプロジェクトの lint/型チェック実行時間に応じて調整する
+
+### カスタマイズ
+
+- パッケージマネージャが `pnpm` 以外の場合は `npm` / `yarn` に置き換える
+- lint コマンドが `eslint` 直接実行の場合は `pnpm lint` を `npx eslint .` 等に変更する
+- 運用ガイドラインの詳細は `.claude/rules/quality-gate-hooks.md` を参照
 
 ## PreToolUse プロンプト強化フック（オプション）
 
