@@ -765,12 +765,35 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 | `test-driven-development` | RED-GREEN-REFACTOR サイクルによる TDD ワークフロー | 機能実装・バグ修正の開始時 |
 | `requesting-code-review` | サブエージェントによるコードレビュー（Critical/Important/Minor 三段階評価） | 主要機能完了時・PR 作成前 |
 | `verification-before-completion` | 完了宣言前の実行証拠確認（推測での完了宣言を防止） | 「完了しました」と宣言する前 |
+| `differential-review` | PR・コミット差分のセキュリティ特化レビュー（認証・暗号・外部呼び出しのリスク優先分析） | セキュリティ関連コード変更時 |
+| `static-analysis` | Semgrep・CodeQL を活用した静的セキュリティ解析・SARIF トリアージ | セキュリティ監査・依存関係更新後 |
+| `second-opinion` | OpenAI Codex CLI・Google Gemini CLI によるマルチ LLM コードレビュー | セキュリティクリティカルな変更時 |
 
 #### 既存フローとの関係
 
 - **test-driven-development** → `.claude/rules/git-conventions.md` のセルフレビュー「テスト十分性」項目の根拠となる
 - **requesting-code-review** → セルフレビュー（毎コミット）と `/review-respond`（PR 後の Copilot レビュー対応）の間を埋める、PR 作成前のサブエージェントレビュー
 - **verification-before-completion** → セルフレビューチェックリストの各項目に対する検証品質を担保する補完スキル
+- **differential-review** → Trail of Bits のセキュリティレビュー手法を参考にした、セキュリティ特化の差分レビュー。`requesting-code-review` が一般的な品質レビューを担うのに対し、認証・暗号・外部呼び出し等のセキュリティ観点に特化
+- **static-analysis** → Semgrep/CodeQL を活用した静的解析。外部ツール（Semgrep CLI 等）が必要。前提条件は下記「セキュリティスキルの前提条件」参照
+- **second-opinion** → 外部 LLM（Codex CLI/Gemini CLI）による多角的レビュー。外部ツールが必要。機密コードには使用注意
+
+#### セキュリティスキルの前提条件
+
+セキュリティスキル（`differential-review`, `static-analysis`, `second-opinion`）は Trail of Bits のセキュリティレビュー手法を参考にしています。各スキルの前提条件は以下の通りです。
+
+| スキル | 必要な外部ツール | インストール方法 |
+| --- | --- | --- |
+| `differential-review` | なし（`git` のみ） | — |
+| `static-analysis` | Semgrep CLI（推奨）、CodeQL CLI（任意）、jq（推奨） | `pip install semgrep` / `brew install semgrep` / `brew install jq` / CodeQL CLI: [GitHub Releases](https://github.com/github/codeql-cli-binaries/releases) |
+| `second-opinion` | OpenAI Codex CLI または Google Gemini CLI（少なくとも1つ） | `npm i -g @openai/codex` / `npm i -g @google/gemini-cli` |
+
+**`differential-review`** は外部ツール不要で即座に利用できます。`static-analysis` と `second-opinion` は外部ツールのインストールが必要なため、段階的に導入することを推奨します。
+
+**注意事項:**
+- `second-opinion` は外部 LLM にコードを送信するため、機密性の高いコードでは使用を控えてください
+- `static-analysis` で Semgrep を使用する場合は `--metrics=off` を指定してテレメトリ送信を無効化してください
+- 各スキルの詳細なワークフローは `.claude/skills/{スキル名}/SKILL.md` を参照してください
 
 #### カスタマイズ
 
