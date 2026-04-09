@@ -48,7 +48,7 @@ globs: []
 - `Bash` ツールで `git commit` が実行された後に発火
 - `pnpm lint --quiet` を実行し、エラーがあれば stdout に出力
 - Claude はこの出力を読み取り、lint エラーを自動修正する
-- `|| true` により、lint エラーがあってもフック自体は成功として扱う（Claude にフィードバックが伝わる）
+- `|| true` で `pnpm lint --quiet` の非 0 終了コードを吸収し、末尾の `; true` により条件不一致時も含めてフック全体は成功として扱う（Claude にフィードバックが伝わる）
 
 ## Phase 2: TypeScript ファイル編集時の型チェック
 
