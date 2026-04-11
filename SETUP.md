@@ -30,6 +30,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.github/copilot-instructions.md`      | Focus Areas・Skip These                      | プロジェクトのレビュー方針・セキュリティ要件に合わせてカスタマイズ               |
 | `.env.sample`                          | 環境変数エントリ                             | プロジェクト固有の環境変数を追記（必要に応じて下流の `.templatesyncignore` で保護） |
 | `.gitignore`                           | プロジェクト固有の除外パターン               | `node_modules/`, `dist/`, `build/` 等、プロジェクトの技術スタックに合わせて追記（テンプレートは `.env*` と汎用ノイズのみ同梱） |
+| `.claude/skills/`                      | 不要スキルの削除・独自スキルの追加           | 詳細と各スキルの前提ツール（Semgrep / CodeQL / Codex CLI / Gemini CLI 等）は下記「`.claude/skills/` ディレクトリ」セクション参照 |
 
 **レビュワー名に関する注記:** `.claude/rules/git-conventions.md` ではassignee/reviewerの短縮名を、`.claude/commands/issue-pr.md` と `.claude/commands/review-respond.md` では正式名 `copilot-pull-request-reviewer[bot]` を使用しています。テンプレート展開時は、使用するレビュワーに合わせて**両方のファイル**を統一的に変更してください。
 
