@@ -45,8 +45,8 @@ cp .env.sample .env
 #    - OPENAI_API_KEY  （o3-search-mcp 用。OpenAI Tier 4 以上）
 #    - 必要に応じて SEARCH_CONTEXT_SIZE / REASONING_EFFORT
 
-# 3. .env を Git 管理対象から外す（未登録の場合のみ）
-echo '.env' >> .gitignore
+# 3. .env を Git 管理対象から外す（未登録の場合のみ追記）
+grep -qxF '.env' .gitignore 2>/dev/null || echo '.env' >> .gitignore
 if git ls-files --error-unmatch .env >/dev/null 2>&1; then
   git rm --cached .env
 fi
