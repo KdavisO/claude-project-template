@@ -29,6 +29,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.claudeignore`                        | 除外パターン                                 | プロジェクトの技術スタックに合わせて不要なパターンを削除・追加                   |
 | `.github/copilot-instructions.md`      | Focus Areas・Skip These                      | プロジェクトのレビュー方針・セキュリティ要件に合わせてカスタマイズ               |
 | `.env.sample`                          | 環境変数エントリ                             | プロジェクト固有の環境変数を追記（必要に応じて下流の `.templatesyncignore` で保護） |
+| `.gitignore`                           | プロジェクト固有の除外パターン               | `node_modules/`, `dist/`, `build/` 等、プロジェクトの技術スタックに合わせて追記（テンプレートは `.env*` と汎用ノイズのみ同梱） |
 
 **レビュワー名に関する注記:** `.claude/rules/git-conventions.md` ではassignee/reviewerの短縮名を、`.claude/commands/issue-pr.md` と `.claude/commands/review-respond.md` では正式名 `copilot-pull-request-reviewer[bot]` を使用しています。テンプレート展開時は、使用するレビュワーに合わせて**両方のファイル**を統一的に変更してください。
 
@@ -45,15 +46,20 @@ cp .env.sample .env
 #    - OPENAI_API_KEY  （o3-search-mcp 用。OpenAI Tier 4 以上）
 #    - 必要に応じて SEARCH_CONTEXT_SIZE / REASONING_EFFORT
 
-# 3. .env を Git 管理対象から外す
-#    （このテンプレートは template-sync の上書き回避のため `.gitignore` を
-#      同梱していません。`.gitignore` が存在しない場合は新規作成されます）
-touch .gitignore
-grep -qxF '.env' .gitignore 2>/dev/null || echo '.env' >> .gitignore
+# 3. .env が Git 管理対象外であることを確認
+#    （テンプレート同梱の `.gitignore` で `.env*` は全て除外されています。
+#      `.env`, `.env.local`, `.env.production`, `.env.development` 等の派生も含む。
+#      `!.env.sample` の negate パターンにより `.env.sample` のみ Git 管理対象）
+git check-ignore -v .env        # => .gitignore:XX:.env*   .env   （除外されている）
+git check-ignore .env.sample; echo "exit=$?"  # => exit=1（除外されていない = ignore 対象ではない）
+
+# すでに .env を Git 管理している場合（古い履歴の下流など）のみ、追跡対象から外す
 if git ls-files --error-unmatch .env >/dev/null 2>&1; then
   git rm --cached .env
 fi
 ```
+
+> **セキュリティ:** テンプレートの `.gitignore` は `.env*` を除外するため、`.env.sample` から作成した `.env`（実 API キー入り）の誤コミットを防止します。プロジェクト固有の除外パターン（`node_modules/`, `dist/` 等）は下流で `.gitignore` に追記してください。`.templatesyncignore` に `.gitignore` が含まれているため、下流の独自エントリはテンプレート同期で上書きされません。
 
 > **注意:** `.env` に値を書くだけでは Claude Code / MCP サーバーに自動では渡りません。通常は Claude Code 起動前に `export KEY=...` を実行するか、`direnv` などで `.env` を環境変数へロードしてから起動してください。詳細は後述の各 MCP サーバーセクション（Brave Search MCP / o3-search-mcp）を参照してください。
 
