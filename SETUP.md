@@ -28,7 +28,7 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.github/release.yml`                  | カテゴリ・ラベル                             | プロジェクトのラベルに合わせてリリースノートのカテゴリを変更                     |
 | `.claudeignore`                        | 除外パターン                                 | プロジェクトの技術スタックに合わせて不要なパターンを削除・追加                   |
 | `.github/copilot-instructions.md`      | Focus Areas・Skip These                      | プロジェクトのレビュー方針・セキュリティ要件に合わせてカスタマイズ               |
-| `.env.sample`                          | 環境変数エントリ                             | プロジェクト固有の環境変数を追記（テンプレート同期では上書きされない）           |
+| `.env.sample`                          | 環境変数エントリ                             | プロジェクト固有の環境変数を追記（必要に応じて下流の `.templatesyncignore` で保護） |
 
 **レビュワー名に関する注記:** `.claude/rules/git-conventions.md` ではassignee/reviewerの短縮名を、`.claude/commands/issue-pr.md` と `.claude/commands/review-respond.md` では正式名 `copilot-pull-request-reviewer[bot]` を使用しています。テンプレート展開時は、使用するレビュワーに合わせて**両方のファイル**を統一的に変更してください。
 
@@ -45,7 +45,10 @@ cp .env.sample .env
 #    - OPENAI_API_KEY  （o3-search-mcp 用。OpenAI Tier 4 以上）
 #    - 必要に応じて SEARCH_CONTEXT_SIZE / REASONING_EFFORT
 
-# 3. .env を Git 管理対象から外す（未登録の場合のみ追記）
+# 3. .env を Git 管理対象から外す
+#    （このテンプレートは template-sync の上書き回避のため `.gitignore` を
+#      同梱していません。`.gitignore` が存在しない場合は新規作成されます）
+touch .gitignore
 grep -qxF '.env' .gitignore 2>/dev/null || echo '.env' >> .gitignore
 if git ls-files --error-unmatch .env >/dev/null 2>&1; then
   git rm --cached .env
