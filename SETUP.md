@@ -47,10 +47,11 @@ cp .env.sample .env
 #    - 必要に応じて SEARCH_CONTEXT_SIZE / REASONING_EFFORT
 
 # 3. .env が Git 管理対象外であることを確認
-#    （テンプレート同梱の `.gitignore` で `.env` / `.env.local` / `.env.*.local` は
-#      既に除外されています。`.env.sample` のみが Git 管理対象）
-git check-ignore -v .env        # => .gitignore:XX:.env    .env
-git check-ignore .env.sample    # => 何も出力されなければ Git 管理対象のまま（正しい）
+#    （テンプレート同梱の `.gitignore` で `.env*` は全て除外されています。
+#      `.env`, `.env.local`, `.env.production`, `.env.development` 等の派生も含む。
+#      `!.env.sample` の negate パターンにより `.env.sample` のみ Git 管理対象）
+git check-ignore -v .env        # => .gitignore:XX:.env*   .env   （除外されている）
+git check-ignore .env.sample; echo "exit=$?"  # => exit=1（除外されていない = ignore 対象ではない）
 
 # すでに .env を Git 管理している場合（古い履歴の下流など）のみ、追跡対象から外す
 if git ls-files --error-unmatch .env >/dev/null 2>&1; then
