@@ -11,6 +11,10 @@
 .claude/agents/
 docs/specs/
 docs/docker-autonomous.md
+# .env.sample はテンプレート初回利用時に配布されるが、
+# 下流プロジェクトが独自の環境変数エントリを追記している可能性があるため、
+# 以降のテンプレート同期では上書きしない
+.env.sample
 
 # Docker 実行環境（プロジェクト固有にカスタマイズされる可能性あり）
 Dockerfile

@@ -28,8 +28,39 @@ gh repo create <new-repo> --template KdavisO/claude-project-template --public
 | `.github/release.yml`                  | カテゴリ・ラベル                             | プロジェクトのラベルに合わせてリリースノートのカテゴリを変更                     |
 | `.claudeignore`                        | 除外パターン                                 | プロジェクトの技術スタックに合わせて不要なパターンを削除・追加                   |
 | `.github/copilot-instructions.md`      | Focus Areas・Skip These                      | プロジェクトのレビュー方針・セキュリティ要件に合わせてカスタマイズ               |
+| `.env.sample`                          | 環境変数エントリ                             | プロジェクト固有の環境変数を追記（テンプレート同期では上書きされない）           |
 
 **レビュワー名に関する注記:** `.claude/rules/git-conventions.md` ではassignee/reviewerの短縮名を、`.claude/commands/issue-pr.md` と `.claude/commands/review-respond.md` では正式名 `copilot-pull-request-reviewer[bot]` を使用しています。テンプレート展開時は、使用するレビュワーに合わせて**両方のファイル**を統一的に変更してください。
+
+## 環境変数（`.env.sample` → `.env`）
+
+テンプレートには MCP サーバー用の環境変数をまとめた `.env.sample` が同梱されています。新しくテンプレートからプロジェクトを作成したら、以下の手順で `.env` を作成してください。
+
+```bash
+# 1. サンプルをコピー
+cp .env.sample .env
+
+# 2. .env を編集して実際のキーを設定
+#    - BRAVE_API_KEY   （Brave Search MCP 用。https://brave.com/search/api/ から取得）
+#    - OPENAI_API_KEY  （o3-search-mcp 用。OpenAI Tier 4 以上）
+#    - 必要に応じて SEARCH_CONTEXT_SIZE / REASONING_EFFORT
+
+# 3. .env を Git 管理対象から外す（未登録の場合のみ）
+echo '.env' >> .gitignore
+if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+  git rm --cached .env
+fi
+```
+
+> **注意:** `.env` に値を書くだけでは Claude Code / MCP サーバーに自動では渡りません。通常は Claude Code 起動前に `export KEY=...` を実行するか、`direnv` などで `.env` を環境変数へロードしてから起動してください。詳細は後述の各 MCP サーバーセクション（Brave Search MCP / o3-search-mcp）を参照してください。
+
+### テンプレート同期との関係
+
+`.env.sample` は `.templatesyncignore` に登録されているため、テンプレート同期では上書きされません。これは下流プロジェクトが独自に追記した環境変数エントリを保護するための仕様です。
+
+- **初回のテンプレート利用時:** `.env.sample` はテンプレートから配布されます（`gh repo create --template` 経由でコピーされる）
+- **2回目以降のテンプレート同期時:** `.env.sample` は同期対象外となり、下流プロジェクトの独自エントリが保持されます
+- **テンプレート側に新しい環境変数が追加された場合:** 下流プロジェクト側で手動マージが必要です。テンプレートのリリースノートや CHANGELOG を確認し、必要なキーを `.env.sample` / `.env` に追記してください
 
 ## 連続自動実行
 
