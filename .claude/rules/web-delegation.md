@@ -19,7 +19,7 @@ globs: []
 
 ### Brave Search MCP を使う場合（有効時のみ）
 
-> **注意:** Brave Search MCP はデフォルトで無効（`.mcp.json` で `"disabled": true`）です。有効化手順は `SETUP.md` を参照してください。Brave Search が無効の場合、軽量な検索用途には **o3-search-mcp** を代替として使用してください。
+> **注意:** Brave Search MCP はデフォルトで無効（`.mcp.json` で `"disabled": true`）です。`.mcp.json` に設定が存在していても、無効化されたままでは Claude Code セッション内で直接ツールを呼び出せません。直接利用できるのは有効化後のみです。有効化手順は `SETUP.md` を参照してください。Brave Search が無効の場合、軽量な検索用途には **o3-search-mcp** を代替として使用してください。
 
 - エラーメッセージやスタックトレースの検索
 - 特定の API・関数・設定値の仕様確認
@@ -58,7 +58,7 @@ globs: []
 
 ## Brave Search MCP の利用手順
 
-Brave Search MCP は `.mcp.json` で設定済みのため、Claude Code セッション内で直接ツールを呼び出せる。
+Brave Search MCP は `.mcp.json` に設定が含まれているが、デフォルトでは無効化されている。有効化後に Claude Code セッション内で直接ツールを呼び出せる。
 
 1. `brave_web_search` ツールを使用して検索クエリを実行する
 2. 検索結果から必要な情報を抽出し、実装・修正に反映する

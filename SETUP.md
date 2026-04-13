@@ -186,12 +186,14 @@ fi
 
 5. `.mcp.json` の `brave-search` エントリを有効化:
 
-```json
-// .mcp.json の brave-search エントリから "disabled": true を削除するか、false に変更
+`.mcp.json` の `brave-search` エントリから `"disabled": true` の行を削除するか、`false` に変更してください:
+
+```jsonc
+// 変更前（デフォルト）
 "brave-search": {
   "command": "npx",
   "args": ["-y", "@modelcontextprotocol/server-brave-search@1"],
-  // "disabled": true,  ← この行を削除または false に変更
+  "disabled": true,  // ← この行を削除または false に変更
   "env": {
     "BRAVE_API_KEY": "${BRAVE_API_KEY}"
   }
