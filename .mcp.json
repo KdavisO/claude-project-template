@@ -11,6 +11,7 @@
     "brave-search": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-brave-search@1"],
+      "disabled": true,
       "env": {
         "BRAVE_API_KEY": "${BRAVE_API_KEY}"
       }

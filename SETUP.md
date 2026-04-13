@@ -143,9 +143,11 @@ resolve-library-id で React のドキュメントを検索して
 - `npx` による初回起動時にパッケージのダウンロードが発生します
 - Node.js（v18 以上）が必要です
 
-## Brave Search MCP サーバー（オプション）
+## Brave Search MCP サーバー（オプション・デフォルト無効）
 
 テンプレートには [Brave Search MCP](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search) サーバーの設定が `.mcp.json` に含まれています。Brave Search は Web 検索 API を MCP 経由で Claude Code から直接利用でき、エラー解決や API 仕様確認などの軽量な検索に適しています。月 2,000 クエリまで無料で利用可能です。
+
+> **デフォルト無効:** `.mcp.json` の `brave-search` エントリは `"disabled": true` に設定されており、API キーの有無に関わらずサーバーは起動されません。利用する場合は以下の「有効化手順」に従ってください。
 
 ### 含まれるファイル
 
@@ -154,9 +156,9 @@ resolve-library-id で React のドキュメントを検索して
 | `.mcp.json` | Brave Search MCP サーバーの設定（`brave-search` エントリ） |
 | `.claude/rules/web-delegation.md` | Brave Search MCP と gemini-analyzer の使い分け基準 |
 
-### 前提条件
+### 有効化手順
 
-Brave Search API キーが必要です。以下の手順で取得・設定してください:
+Brave Search MCP を利用するには、API キーの設定と `.mcp.json` の有効化の両方が必要です:
 
 1. [Brave Search API](https://brave.com/search/api/) にアクセスし、アカウントを作成
 2. 「Free」プラン（月 2,000 クエリ無料）を選択
@@ -182,6 +184,20 @@ if git ls-files --error-unmatch .env >/dev/null 2>&1; then
 fi
 ```
 
+5. `.mcp.json` の `brave-search` エントリを有効化:
+
+```json
+// .mcp.json の brave-search エントリから "disabled": true を削除するか、false に変更
+"brave-search": {
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-brave-search@1"],
+  // "disabled": true,  ← この行を削除または false に変更
+  "env": {
+    "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+  }
+}
+```
+
 ### 動作確認
 
 Claude Code セッション内で Brave Search MCP のツール `brave_web_search` が利用可能か確認:
@@ -203,12 +219,13 @@ brave_web_search で Next.js App Router middleware を検索して
 
 ### 無効化する場合
 
-`.mcp.json` から `brave-search` エントリを削除してください（他の MCP サーバー設定はそのまま残します）。
+デフォルトで `"disabled": true` が設定されているため、何もしなければ Brave Search MCP は起動されません。明示的に有効化した後に再度無効化する場合は、`.mcp.json` の `brave-search` エントリで `"disabled": true` を設定してください。
 
 ### 注意事項
 
+- デフォルトでは `"disabled": true` が設定されており、Brave Search MCP サーバーは起動されません。利用する場合は上記「有効化手順」に従ってください
 - 無料プランは月 2,000 クエリの制限があります。上限を超えた場合は API エラーが返されます
-- `BRAVE_API_KEY` 環境変数が未設定の場合、MCP サーバーの起動に失敗します
+- `BRAVE_API_KEY` 環境変数が未設定のまま有効化すると、MCP サーバーの起動に失敗します
 - `npx` による初回起動時にパッケージのダウンロードが発生します
 - Node.js（v18 以上）が必要です
 

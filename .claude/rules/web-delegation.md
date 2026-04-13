@@ -13,11 +13,13 @@ globs: []
 
 | 用途 | 手段 | 例 | コスト目安 |
 | --- | --- | --- | --- |
-| 軽い検索（単発の事実確認） | **Brave Search MCP** | エラーメッセージの検索、API仕様の確認、最新バージョン確認 | 無料（月2,000クエリ） |
+| 軽い検索（単発の事実確認） | **Brave Search MCP**（有効時のみ） | エラーメッセージの検索、API仕様の確認、最新バージョン確認 | 無料（月2,000クエリ） |
 | 推論付き検索（分析が必要な検索） | **o3-search-mcp** | 技術比較調査、エラーの根本原因分析、設計判断の裏付け | 約$0.05〜$0.15/回 |
 | 大規模調査（網羅的スキャン） | **gemini-analyzer** | 複数観点の調査、ベストプラクティスの網羅的収集 | エージェント起動コスト |
 
-### Brave Search MCP を使う場合
+### Brave Search MCP を使う場合（有効時のみ）
+
+> **注意:** Brave Search MCP はデフォルトで無効（`.mcp.json` で `"disabled": true`）です。有効化手順は `SETUP.md` を参照してください。Brave Search が無効の場合、軽量な検索用途には **o3-search-mcp** を代替として使用してください。
 
 - エラーメッセージやスタックトレースの検索
 - 特定の API・関数・設定値の仕様確認
@@ -66,7 +68,9 @@ Brave Search MCP は `.mcp.json` で設定済みのため、Claude Code セッ�
 brave_web_search で "Next.js middleware redirect loop" を検索
 ```
 
+※ `.mcp.json` で `brave-search` が有効化されている必要がある（デフォルトは無効。有効化手順は `SETUP.md` を参照）
 ※ `BRAVE_API_KEY` 環境変数が設定されている必要がある（設定手順は `SETUP.md` を参照）
+※ Brave Search が無効の場合は、o3-search-mcp または gemini-analyzer で代替する
 
 ## o3-search-mcp の利用手順
 
