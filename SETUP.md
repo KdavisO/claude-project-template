@@ -832,6 +832,7 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 | `static-analysis` | Semgrep・CodeQL を活用した静的セキュリティ解析・SARIF トリアージ | セキュリティ監査・依存関係更新後 |
 | `second-opinion` | OpenAI Codex CLI・Google Gemini CLI によるマルチ LLM コードレビュー | セキュリティクリティカルな変更時 |
 | `systematic-debugging` | 4フェーズの根本原因調査プロセスによる体系的デバッグ | バグ調査・テスト失敗の原因特定時 |
+| `writing-plans` | 大規模タスクのタスク分解と実装計画の作成（ファイルパス・変更内容・テスト方法を明確化） | 設計ブレスト後・複数ファイルにまたがる実装の着手前 |
 
 #### 既存フローとの関係
 
@@ -842,6 +843,7 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 - **static-analysis** → Semgrep/CodeQL を活用した静的解析。外部ツール（Semgrep CLI 等）が必要。前提条件は下記「セキュリティスキルの前提条件」参照
 - **second-opinion** → 外部 LLM（Codex CLI/Gemini CLI）による多角的レビュー。外部ツールが必要。機密コードには使用注意
 - **systematic-debugging** → 4フェーズの根本原因調査プロセス。原因が不明なバグでは `test-driven-development` の前段として使用し、根本原因を特定してから TDD の RED-GREEN で修正する
+- **writing-plans** → `brainstorming` で設計を固めた後のタスク分解・実装計画作成。各タスクにファイルパス・変更内容・テスト方法・コミットプレフィックスを明記し、git-conventions.md のコミット粒度と対応させる
 
 #### セキュリティスキルの前提条件
 
