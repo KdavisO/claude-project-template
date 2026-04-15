@@ -831,6 +831,7 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 | `differential-review` | PR・コミット差分のセキュリティ特化レビュー（認証・暗号・外部呼び出しのリスク優先分析） | セキュリティ関連コード変更時 |
 | `static-analysis` | Semgrep・CodeQL を活用した静的セキュリティ解析・SARIF トリアージ | セキュリティ監査・依存関係更新後 |
 | `second-opinion` | OpenAI Codex CLI・Google Gemini CLI によるマルチ LLM コードレビュー | セキュリティクリティカルな変更時 |
+| `systematic-debugging` | 4フェーズの根本原因調査プロセスによる体系的デバッグ | バグ調査・テスト失敗の原因特定時 |
 
 #### 既存フローとの関係
 
@@ -840,6 +841,7 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 - **differential-review** → Trail of Bits のセキュリティレビュー手法を参考にした、セキュリティ特化の差分レビュー。`requesting-code-review` が一般的な品質レビューを担うのに対し、認証・暗号・外部呼び出し等のセキュリティ観点に特化
 - **static-analysis** → Semgrep/CodeQL を活用した静的解析。外部ツール（Semgrep CLI 等）が必要。前提条件は下記「セキュリティスキルの前提条件」参照
 - **second-opinion** → 外部 LLM（Codex CLI/Gemini CLI）による多角的レビュー。外部ツールが必要。機密コードには使用注意
+- **systematic-debugging** → 4フェーズの根本原因調査プロセス。原因が不明なバグでは `test-driven-development` の前段として使用し、根本原因を特定してから TDD の RED-GREEN で修正する
 
 #### セキュリティスキルの前提条件
 
