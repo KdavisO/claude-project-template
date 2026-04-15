@@ -843,7 +843,7 @@ Issue #15 の内容を docs/specs/_template.md のフォーマットで仕様書
 - **static-analysis** → Semgrep/CodeQL を活用した静的解析。外部ツール（Semgrep CLI 等）が必要。前提条件は下記「セキュリティスキルの前提条件」参照
 - **second-opinion** → 外部 LLM（Codex CLI/Gemini CLI）による多角的レビュー。外部ツールが必要。機密コードには使用注意
 - **systematic-debugging** → 4フェーズの根本原因調査プロセス。原因が不明なバグでは `test-driven-development` の前段として使用し、根本原因を特定してから TDD の RED-GREEN で修正する
-- **writing-plans** → `brainstorming` で設計を固めた後のタスク分解・実装計画作成。各タスクにファイルパス・変更内容・テスト方法・コミットプレフィックスを明記し、git-conventions.md のコミット粒度と対応させる
+- **writing-plans** → 設計ブレストで方針を固めた後のタスク分解・実装計画作成。各タスクにファイルパス・変更内容・テスト方法・コミットプレフィックスを明記し、`.claude/rules/git-conventions.md` のコミット粒度と対応させる
 
 #### セキュリティスキルの前提条件
 

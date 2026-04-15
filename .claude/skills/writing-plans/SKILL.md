@@ -95,7 +95,7 @@ brainstorming が設計ドキュメントを作成した後、writing-plans が�
 ### `/test-driven-development` との連携
 
 - 計画の各タスクに「テスト方法」を明記することで、TDD の RED フェーズで書くべきテストケースが事前に特定される
-- テストタスクと実装タスクを別コミットとして計画する（git-conventions.md の「本体コード vs テストコード は別コミットに分ける」規約に従う）
+- テストタスクと実装タスクを別コミットとして計画する（git-conventions.md の「本体コード vs テストコード」規約に従う）
 
 ### `docs/specs/_template.md` との関係
 
