@@ -75,15 +75,15 @@ flowchart TD
     Implement --> SelfReview["セルフレビュー\nチェックリスト確認"]
     SelfReview --> Commit["コミット\n粒度ガイドラインに従う"]
     Commit --> PR["/issue-pr --auto\nPR作成・Copilotレビュー依頼"]
-    PR --> Poll["/loop 4m\n/review-respond --auto"]
+    PR --> Poll["/loop 4m --skip-first\n/review-respond --auto --max-idle 3 {PR番号}"]
 
     Poll --> Check{"未対応\nコメント?"}
     Check -->|"あり"| Fix["コード修正・コミット\nレビュー再依頼"]
     Fix --> Poll
-    Check -->|"3回連続なし"| PostAction["ポストアクション"]
+    Check -->|"3回連続なし\n(未対応コメントなし)"| PostAction["ポストアクション"]
 
     PostAction --> Merge["PRマージ\nsquash merge"]
-    Merge --> ScopeOut["/issue-create\nスコープ外Issue起票"]
+    Merge --> ScopeOut["スコープ外Issue候補\nユーザー承認後に起票"]
     ScopeOut --> Cleanup["worktree 削除"]
     Cleanup --> Summary["完了サマリー出力"]
     Summary --> Suggest["/suggest-next"]
@@ -101,7 +101,7 @@ flowchart TD
     Trigger(["loop cron 発火"]) --> FetchReview["Copilot レビュー取得\ngh api"]
     FetchReview --> HasComments{"未対応\nコメント?"}
 
-    HasComments -->|"なし"| IncrIdle["idle カウンタ +1\n/tmp/...-idle-PR#"]
+    HasComments -->|"なし"| IncrIdle["idle カウンタ +1\n/tmp/{project}-review-{ownerRepo}-idle-{PR番号}"]
     IncrIdle --> CheckIdle{"idle >= \nmax-idle?"}
     CheckIdle -->|"No"| WaitNext(["次回 polling 待ち"])
     CheckIdle -->|"Yes"| StopPoll["polling 停止\nCronDelete"]
@@ -131,9 +131,9 @@ flowchart TD
     Select --> SetA["セット提案\nIssue群を表示"]
     SetA --> UserSelect["ユーザーがセット選択"]
 
-    UserSelect --> T1["/issue-start #A\n--parallel --auto\nworktree A"]
-    UserSelect --> T2["/issue-start #B\n--parallel --auto\nworktree B"]
-    UserSelect --> T3["/issue-start #C\n--parallel --auto\nworktree C"]
+    UserSelect --> T1["/issue-start #A\n--parallel [--auto]\nworktree A"]
+    UserSelect --> T2["/issue-start #B\n--parallel [--auto]\nworktree B"]
+    UserSelect --> T3["/issue-start #C\n--parallel [--auto]\nworktree C"]
 
     T1 --> PR1["PR #A"]
     T2 --> PR2["PR #B"]
