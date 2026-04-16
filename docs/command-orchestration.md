@@ -223,7 +223,8 @@ flowchart TD
     Review -->|"該当"| RCR["コードレビュー実施\nCritical修正・再レビュー確認"]
     Review -->|"スキップ"| PR["PR作成へ"]
     RCR -->|"Critical解消"| PR
-    RCR -->|"Critical残存"| RCR
+    RCR -->|"Critical残存"| Fix["修正\n(必要なら再コミット)"]
+    Fix -->|"再度 /requesting-code-review"| RCR
 ```
 
 ### 6b. スキル間の連携（手動実行時も含む）
