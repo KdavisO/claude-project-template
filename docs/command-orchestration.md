@@ -84,11 +84,11 @@ flowchart TD
     Debug --> SelfReview
     Implement --> SelfReview
     SelfReview --> Commit["コミット\n粒度ガイドラインに従う"]
-    Commit --> CodeReview{"/requesting-code-review\n(大規模 or セキュリティ?)"}
-    CodeReview -->|"該当"| RCR["コードレビュー実施\nCritical修正"]
+    Commit --> CodeReview{"/requesting-code-review\n(--no-skills なし かつ\n大規模 or セキュリティ?)"}
+    CodeReview -->|"該当"| RCR["コードレビュー実施\nCritical修正・再レビュー確認"]
     CodeReview -->|"スキップ"| PR["/issue-pr --auto\nPR作成・Copilotレビュー依頼"]
     RCR --> ReCommit["修正をコミット"]
-    ReCommit --> PR
+    ReCommit --> CodeReview
     PR --> Poll["/loop 4m --skip-first\n/review-respond --auto --max-idle 3 {PR番号}"]
 
     Poll --> Check{"未対応\nコメント?"}
@@ -218,9 +218,10 @@ flowchart TD
     Medium --> Review
     BugFix --> Review
     Small --> Review
-    Review -->|"該当"| RCR["コードレビュー実施"]
+    Review -->|"該当"| RCR["コードレビュー実施\nCritical修正・再レビュー確認"]
     Review -->|"スキップ"| PR["PR作成へ"]
-    RCR --> PR
+    RCR -->|"Critical解消"| PR
+    RCR -->|"Critical残存"| RCR
 ```
 
 ### 6b. スキル間の連携（手動実行時も含む）
