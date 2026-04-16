@@ -39,10 +39,10 @@ graph LR
     end
 
     IS -->|"--auto"| IP
-    IS -->|"--auto (大規模)"| BD
-    IS -->|"--auto (中規模)"| WP
-    IS -->|"--auto (バグ修正)"| SD
-    IS -->|"--auto (大規模/セキュリティ)"| RCR
+    IS -->|"--auto かつ --no-skills なし (大規模)"| BD
+    IS -->|"--auto かつ --no-skills なし (中規模)"| WP
+    IS -->|"--auto かつ --no-skills なし (バグ修正)"| SD
+    IS -->|"--auto かつ --no-skills なし (大規模/セキュリティ)"| RCR
     IS -->|"完了後"| SN
     IS -->|"--continuous"| IS
     IS -->|"research mode"| IC
@@ -204,11 +204,13 @@ flowchart TD
 設計からテスト駆動開発への接続と、品質保証スキルの適用タイミング。
 `/issue-start --auto` のスキルオーケストレーションにより、Issue の規模・性質に応じて自動選択・実行される。
 
-### 6a. スキル自動選択（`/issue-start --auto` 内）
+### 6a. スキル自動選択（`/issue-start --auto` 内、`--no-skills` 未指定時）
+
+> `--no-skills` 指定時はこのフロー全体（スキル選択・実行および `/requesting-code-review`）がスキップされ、直接実装 → PR作成に進む。
 
 ```mermaid
 flowchart TD
-    Issue(["Issue 分析"]) --> Judge{"規模・性質\n判定"}
+    Issue(["Issue 分析\n(--no-skills 未指定時)"]) --> Judge{"規模・性質\n判定"}
     Judge -->|"大規模・設計必要\n(複数モジュール・新パターン)"| Large["1. /brainstorming\n2. /writing-plans\n3. /test-driven-development"]
     Judge -->|"中規模・機能追加\n(単一モジュール・3-5ファイル)"| Medium["1. /writing-plans\n2. /test-driven-development"]
     Judge -->|"バグ修正\n(bug ラベル)"| BugFix["1. /systematic-debugging\n2. /test-driven-development"]
