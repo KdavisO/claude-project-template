@@ -43,7 +43,7 @@ This project uses Claude Code for implementation and self-review. Copilot serves
 
 ## Skip These
 
-The following categories should NOT be flagged in reviews. The guiding principle: **skip stylistic preferences; flag only issues that affect correctness, security, or runtime behavior.**
+The following categories should NOT be flagged in reviews. The guiding principle: **skip stylistic preferences; flag issues that affect correctness, security, reliability, type safety, testability, or architecture/design.**
 
 ### Formatting & Style
 
