@@ -46,10 +46,9 @@ graph LR
     IP -->|"--auto"| LP
     LP -->|"polling"| RR
     RR -->|"scope-out"| IC
-    RR -->|"re-poll"| LP
+    RR -->|"CronCreate で再開"| LP
     PS -->|"各Issue"| IS
     PT -->|"検出Issue"| IC
-    PT -->|"--team"| IS
     BD -->|"設計書"| WP
     WP -->|"実装計画"| TDD
     SD -->|"回帰テスト"| TDD
@@ -106,7 +105,8 @@ flowchart TD
     CheckIdle -->|"No"| WaitNext(["次回 polling 待ち"])
     CheckIdle -->|"Yes"| StopPoll["polling 停止\nCronDelete"]
 
-    HasComments -->|"あり"| ResetIdle["idle カウンタ = 0"]
+    HasComments -->|"あり"| PausePoll["polling 一時停止\nCronDelete"]
+    PausePoll --> ResetIdle["idle カウンタ = 0"]
     ResetIdle --> TeamCheck{"--team かつ\n5件以上?"}
     TeamCheck -->|"Yes"| AgentTeams["Agent Teams で\n観点別分担"]
     TeamCheck -->|"No"| Sequential["逐次対応"]
@@ -114,11 +114,12 @@ flowchart TD
     Sequential --> FixCode
     FixCode --> CommitFix["コミット・push"]
     CommitFix --> ReRequest["Copilot レビュー再依頼"]
-    ReRequest --> WaitNext
+    ReRequest --> ResumePoll["polling 再開\nCronCreate・cronタスクIDファイル更新\nidle カウンタ = 0"]
+    ResumePoll --> WaitNext
 
     StopPoll --> StopReason{"停止理由"}
-    StopReason -->|"未対応なし"| PostAction["ポストアクション実行\nマージ・Issue起票・cleanup"]
-    StopReason -->|"レビュー未着"| NoAction["ポストアクション\nスキップ"]
+    StopReason -->|"未対応コメントなし"| PostAction["ポストアクション実行\nマージ・Issue起票・cleanup"]
+    StopReason -->|"Copilotレビュー未着"| NoAction["ポストアクション\nスキップ"]
 ```
 
 ## 4. 並列実行パターン
@@ -251,7 +252,7 @@ graph TD
 | コマンド | 用途 | 主な呼び出し元 |
 |---------|------|--------------|
 | `/issue-start` | Issue着手（worktree作成・実装・PR作成） | `/parallel-suggest`, 手動 |
-| `/issue-pr` | PR作成・Copilotレビュー依頼 | `/issue-start --auto` |
+| `/issue-pr` | PR作成・Copilotレビュー依頼 | `/issue-start --parallel --auto` |
 | `/review-respond` | Copilotレビューへの自動対応 | `/loop` (polling) |
 | `/loop` | 定期実行スケジューラ | `/issue-pr --auto` |
 | `/suggest-next` | 次Issue候補の提案 | `/issue-start` (完了後) |
