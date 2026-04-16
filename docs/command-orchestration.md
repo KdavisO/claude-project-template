@@ -49,7 +49,7 @@ graph LR
     RR -->|"re-poll"| LP
     PS -->|"各Issue"| IS
     PT -->|"検出Issue"| IC
-    PT -->|"--team"| GA
+    PT -->|"--team"| IS
     BD -->|"設計書"| WP
     WP -->|"実装計画"| TDD
     SD -->|"回帰テスト"| TDD
@@ -170,14 +170,14 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    Start(["開始\n--max-issues N"]) --> Process["Issue #A を\nauto mode で処理"]
+    Start(["開始\n/issue-start ...\n--parallel --auto --continuous --max-issues N"]) --> Process["Issue #A を\nauto mode で処理"]
     Process --> Complete["完了サマリー"]
     Complete --> SuggestNext["/suggest-next\nexclude:A"]
     SuggestNext --> Decrement["残り = N - 1"]
     Decrement --> CheckRemain{"残り > 0?"}
     CheckRemain -->|"Yes"| HasCandidate{"候補\nあり?"}
     CheckRemain -->|"No"| Done(["上限到達\n終了"])
-    HasCandidate -->|"Yes"| NextIssue["/issue-start #B\n--max-issues N-1"]
+    HasCandidate -->|"Yes"| NextIssue["/issue-start #B\n--parallel --auto --continuous\n--max-issues N-1"]
     HasCandidate -->|"No"| NoCand(["候補なし\n終了"])
     NextIssue --> Process2["Issue #B を処理"]
     Process2 --> Complete2["...再帰的に繰り返し"]
@@ -213,8 +213,8 @@ flowchart LR
     TDD --> VBC
     VBC --> RCR
     RCR --> DR
-    DR --> SO
-    DR --> SA
+    SO -->|"意見が割れ追加検証が必要"| DR
+    SA -->|"要調査時"| DR
 ```
 
 ## 7. 状態管理: ファイルベースの協調
@@ -224,16 +224,16 @@ flowchart LR
 ```mermaid
 graph TD
     subgraph "ステータスファイル"
-        SF["/tmp/{project}-flow-{repo}-{issue#}\nフロー進捗管理"]
+        SF["/tmp/{project}-flow-{ownerRepo}-{issue番号}\nフロー進捗管理"]
     end
 
     subgraph "ポーリング管理"
-        CF["/tmp/{project}-review-{repo}-cron-{PR#}\nCron タスクID"]
-        IF["/tmp/{project}-review-{repo}-idle-{PR#}\nidle カウンタ"]
-        DF["/tmp/{project}-review-{repo}-deferred-{PR#}\nスコープ外Issue候補"]
+        CF["/tmp/{project}-review-{ownerRepo}-cron-{PR番号}\nCron タスクID"]
+        IF["/tmp/{project}-review-{ownerRepo}-idle-{PR番号}\nidle カウンタ"]
+        DF["/tmp/{project}-review-{ownerRepo}-deferred-{PR番号}\nスコープ外Issue候補"]
     end
 
-    IS["/issue-start --auto"] -->|"作成・更新"| SF
+    IS["/issue-start --parallel --auto"] -->|"作成・更新"| SF
     FS["/flow-status"] -->|"参照"| SF
     RR["/review-respond"] -->|"更新"| SF
 
@@ -270,7 +270,7 @@ graph TD
 | `/writing-plans` | 実装計画作成 | `/test-driven-development` |
 | `/test-driven-development` | TDDワークフロー | 実装タスク全般 |
 | `/systematic-debugging` | 体系的デバッグ | `/test-driven-development` |
-| `/differential-review` | PR差分セキュリティレビュー | `/review-respond` |
+| `/differential-review` | PR差分セキュリティレビュー | 手動（セキュリティ変更時） |
 | `/requesting-code-review` | サブエージェントコードレビュー | PR作成前 |
 | `/second-opinion` | マルチLLMレビュー | セキュリティクリティカルな変更 |
 | `/static-analysis` | 静的セキュリティ解析 | CI連携 |
@@ -278,4 +278,4 @@ graph TD
 
 | エージェント | 用途 | 呼び出し元 |
 |-------------|------|-----------|
-| `gemini-analyzer` | 大規模コードベース解析・Web調査 | `/issue-start` (research), `/patrol` |
+| `gemini-analyzer` | 大規模コードベース解析・Web調査 | `/issue-start` (research / web delegation) |
