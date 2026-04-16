@@ -83,11 +83,12 @@ flowchart TD
     WPlan --> SelfReview
     Debug --> SelfReview
     Implement --> SelfReview
-    SelfReview --> CodeReview{"/requesting-code-review\n(大規模 or セキュリティ?)"}
+    SelfReview --> Commit["コミット\n粒度ガイドラインに従う"]
+    Commit --> CodeReview{"/requesting-code-review\n(大規模 or セキュリティ?)"}
     CodeReview -->|"該当"| RCR["コードレビュー実施\nCritical修正"]
-    CodeReview -->|"スキップ"| Commit["コミット\n粒度ガイドラインに従う"]
-    RCR --> Commit
-    Commit --> PR["/issue-pr --auto\nPR作成・Copilotレビュー依頼"]
+    CodeReview -->|"スキップ"| PR["/issue-pr --auto\nPR作成・Copilotレビュー依頼"]
+    RCR --> ReCommit["修正をコミット"]
+    ReCommit --> PR
     PR --> Poll["/loop 4m --skip-first\n/review-respond --auto --max-idle 3 {PR番号}"]
 
     Poll --> Check{"未対応\nコメント?"}
