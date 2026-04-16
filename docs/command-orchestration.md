@@ -39,6 +39,10 @@ graph LR
     end
 
     IS -->|"--auto"| IP
+    IS -->|"--auto かつ --no-skills なし (大規模)"| BD
+    IS -->|"--auto かつ --no-skills なし (中規模)"| WP
+    IS -->|"--auto かつ --no-skills なし (バグ修正)"| SD
+    IS -->|"--auto かつ --no-skills なし (大規模/セキュリティ)"| RCR
     IS -->|"完了後"| SN
     IS -->|"--continuous"| IS
     IS -->|"research mode"| IC
@@ -70,10 +74,21 @@ flowchart TD
     CloseResearch --> SuggestR["/suggest-next"]
 
     WT --> Analyze["実装前分析\nエッジケース・テスト特定"]
-    Analyze --> Implement["実装\nテスト・lint 実行"]
-    Implement --> SelfReview["セルフレビュー\nチェックリスト確認"]
+    Analyze --> SkillSelect{"スキル\n自動選択\n(--no-skills?)"}
+    SkillSelect -->|"大規模"| BS["/brainstorming\n→ /writing-plans\n→ /test-driven-development"]
+    SkillSelect -->|"中規模"| WPlan["/writing-plans\n→ /test-driven-development"]
+    SkillSelect -->|"バグ修正"| Debug["/systematic-debugging\n→ /test-driven-development"]
+    SkillSelect -->|"小規模 or\n--no-skills"| Implement["直接実装\nテスト・lint 実行"]
+    BS --> SelfReview["セルフレビュー\nチェックリスト確認"]
+    WPlan --> SelfReview
+    Debug --> SelfReview
+    Implement --> SelfReview
     SelfReview --> Commit["コミット\n粒度ガイドラインに従う"]
-    Commit --> PR["/issue-pr --auto\nPR作成・Copilotレビュー依頼"]
+    Commit --> CodeReview{"/requesting-code-review\n(--no-skills なし かつ\n大規模 or セキュリティ?)"}
+    CodeReview -->|"該当"| RCR["コードレビュー実施\nCritical修正・再レビュー確認"]
+    CodeReview -->|"スキップ"| PR["/issue-pr --auto\nPR作成・Copilotレビュー依頼"]
+    RCR --> ReCommit["修正をコミット"]
+    ReCommit --> CodeReview
     PR --> Poll["/loop 4m --skip-first\n/review-respond --auto --max-idle 3 {PR番号}"]
 
     Poll --> Check{"未対応\nコメント?"}
@@ -187,6 +202,32 @@ flowchart TD
 ## 6. スキルのワークフロー連携
 
 設計からテスト駆動開発への接続と、品質保証スキルの適用タイミング。
+`/issue-start --auto` のスキルオーケストレーションにより、Issue の規模・性質に応じて自動選択・実行される。
+
+### 6a. スキル自動選択（`/issue-start --auto` 内、`--no-skills` 未指定時）
+
+> `--no-skills` 指定時はこのフロー全体（スキル選択・実行および `/requesting-code-review`）がスキップされ、直接実装 → PR作成に進む。
+
+```mermaid
+flowchart TD
+    Issue(["Issue 分析\n(--no-skills 未指定時)"]) --> Judge{"規模・性質\n判定"}
+    Judge -->|"大規模・設計必要\n(複数モジュール・新パターン)"| Large["1. /brainstorming\n2. /writing-plans\n3. /test-driven-development"]
+    Judge -->|"中規模・機能追加\n(単一モジュール・3-5ファイル)"| Medium["1. /writing-plans\n2. /test-driven-development"]
+    Judge -->|"バグ修正\n(bug ラベル)"| BugFix["1. /systematic-debugging\n2. /test-driven-development"]
+    Judge -->|"小規模・ドキュメント\n(1-2ファイル・設定変更)"| Small["スキルなし\n直接実装"]
+
+    Large --> Review{"/requesting-code-review\n(大規模 or セキュリティ?)"}
+    Medium --> Review
+    BugFix --> Review
+    Small --> Review
+    Review -->|"該当"| RCR["コードレビュー実施\nCritical修正・再レビュー確認"]
+    Review -->|"スキップ"| PR["PR作成へ"]
+    RCR -->|"Critical解消"| PR
+    RCR -->|"Critical残存"| Fix["修正\n(必要なら再コミット)"]
+    Fix -->|"再度 /requesting-code-review"| RCR
+```
+
+### 6b. スキル間の連携（手動実行時も含む）
 
 ```mermaid
 flowchart LR
@@ -251,7 +292,7 @@ graph TD
 
 | コマンド | 用途 | 主な呼び出し元 |
 |---------|------|--------------|
-| `/issue-start` | Issue着手（worktree作成・実装・PR作成） | `/parallel-suggest`, 手動 |
+| `/issue-start` | Issue着手（worktree作成・スキルオーケストレーション・実装・PR作成）。`--no-skills` でスキル適用スキップ | `/parallel-suggest`, 手動 |
 | `/issue-pr` | PR作成・Copilotレビュー依頼 | `/issue-start --parallel --auto` |
 | `/review-respond` | Copilotレビューへの自動対応 | `/loop` (polling) |
 | `/loop` | 定期実行スケジューラ | `/issue-pr --auto` |
