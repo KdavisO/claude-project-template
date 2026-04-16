@@ -16,7 +16,7 @@ GitHub Issue から開発を開始してください。
 
 ## 共通手順
 
-1. 引数からIssue番号、`--parallel` フラグ、`--auto` フラグ、`--continuous` フラグ、`--max-issues N`、`--team` フラグを解析する
+1. 引数からIssue番号、`--parallel` フラグ、`--auto` フラグ、`--continuous` フラグ、`--max-issues N`、`--team` フラグ、`--no-skills` フラグを解析する
    - `--auto` は `--parallel` と併用する場合のみ有効。`--parallel` なしで `--auto` が指定された場合はエラー
    - `--continuous` は `--parallel --auto` と併用する場合のみ有効。`--parallel --auto` なしで `--continuous` が指定された場合はエラー
    - `--team` は `--parallel --auto` と併用する場合のみ有効。`--parallel --auto` なしで `--team` が指定された場合はエラー
