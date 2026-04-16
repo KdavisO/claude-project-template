@@ -49,7 +49,7 @@ The following categories should NOT be flagged in reviews. The guiding principle
 
 - Whitespace, indentation style, trailing commas, semicolons
 - Import ordering or grouping
-- Naming conventions (e.g., camelCase vs snake_case) — covered by self-review and linter
+- Naming conventions (e.g., camelCase vs snake_case) — covered by self-review and, where applicable, linter/tooling
 - Comment style, JSDoc completeness, or documentation wording
 - Minor refactoring suggestions that don't affect correctness (e.g., "extract this into a helper")
 
@@ -63,8 +63,8 @@ These are style preferences, NOT correctness issues:
 
 ### Diff Display Artifacts
 
-- **Escaped characters in diffs are NOT file content errors.** Git diff output may display escape sequences (e.g., `\"`, `\\n`) that do not exist in the actual file. Do not flag these as issues unless you have verified the raw file content contains the problematic escaping.
-- Example false positive: a diff showing `{ \"key\": \"value\" }` — this is diff rendering, not a JSON escaping error in the source file
+- **Do not assume escaped characters in diffs are rendering artifacts.** In standard git/GitHub diffs, displayed content should normally be treated as the actual file content for that commit, and sequences such as `\"` or `\\n` often legitimately appear in string literals, serialized JSON, or other escaped contexts.
+- False positives here are limited to cases where a viewer/rendering layer is ambiguous or where the diff is showing JSON-inside-a-string or another nested escaped representation. If you suspect that, verify using GitHub's **View file** or raw view for the same commit before dismissing or flagging the escaping as a bug.
 
 ### Boundary: When Consistency IS a Valid Finding
 
