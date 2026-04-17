@@ -85,10 +85,10 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 
 **独立性の根拠**: （変更領域が重複しない理由を記載）
 
-**開始コマンド**:
-/issue-start XXX --parallel
-/issue-start YYY --parallel
-/issue-start ZZZ --parallel
+**開始コマンド**（各チームメイトで `/issue-start --auto` のスキルオーケストレーションを有効にするため `--parallel --auto` を既定とする。スキル適用をスキップしたい場合は `--no-skills` を追加）:
+/issue-start XXX --parallel --auto
+/issue-start YYY --parallel --auto
+/issue-start ZZZ --parallel --auto
 
 ---
 
@@ -182,7 +182,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 
 **チームメイトへの指示テンプレート:**
 
-```
+````
 Issue #{issue番号}「{Issueタイトル}」を実装してください。
 
 ## Issue内容
@@ -275,7 +275,7 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 - 他のチームメイトの担当領域のファイルを変更しないこと: {他チームメイトの担当領域を列挙}
 - worktree が既に存在する場合はエラーメッセージをリードに報告すること
 - **ポーリングが自然停止するまでCWDをworktreeディレクトリに固定すること**（`/review-respond` の worktree削除ポストアクション（手順10-C）がCWD依存のため、途中で `cd` すると自動クリーンアップがスキップされる）
-```
+````
 
 #### フォールバック（従来方式）
 
@@ -284,15 +284,15 @@ Issue #{issue番号}「{Issueタイトル}」を実装してください。
 - 環境変数 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が `"1"` でない（未設定を含む）
 - Agent Teams の作成に失敗した場合（エラーメッセージを表示し、コマンド一覧をフォールバックとして出力）
 
-フォールバック時の出力:
+フォールバック時の出力（基本形。各チームメイトで `/issue-start --auto` のスキルオーケストレーションを有効にするため `--parallel --auto` を既定とする）:
 ```
 以下のコマンドを各ターミナルで実行してください:
-/issue-start XXX --parallel
-/issue-start YYY --parallel
-/issue-start ZZZ --parallel
+/issue-start XXX --parallel --auto
+/issue-start YYY --parallel --auto
+/issue-start ZZZ --parallel --auto
 ```
 
-`--no-skills` が指定されている場合、各コマンドに `--no-skills` を付与する。ただし `--no-skills` は `--parallel --auto` と併用する場合のみ有効なため、`--auto` も併せて付与する:
+`--no-skills` が指定されている場合、各コマンドに `--no-skills` を追加する（`--no-skills` は `--parallel --auto` と併用する場合のみ有効のため、`--auto` は基本形と同様に維持する）:
 
 ```
 以下のコマンドを各ターミナルで実行してください:
