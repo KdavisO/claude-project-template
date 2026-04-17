@@ -141,19 +141,29 @@ flowchart TD
 
 ### 4a. worktree による並列実行
 
+> `/parallel-suggest` は `--no-skills` フラグを受け付ける。未指定時は各チームメイトが担当Issueの規模・性質に応じたスキル自動選択を独立実行する（`.claude/commands/issue-start.md` の「スキルオーケストレーション」セクションに従う）。セット提案のテーブルにはスキル見込み（`適用スキル（見込み）` 列）が表示される。`--no-skills` 指定時はスキル選択・実行およびPR作成前コードレビューを全チームメイトで一律スキップする。
+
 ```mermaid
 flowchart TD
-    PS["/parallel-suggest"] --> Select["並列実行セットの選定"]
+    PS["/parallel-suggest\n[--no-skills]"] --> Select["並列実行セットの選定\nスキル見込みをテーブルに表示"]
     Select --> SetA["セット提案\nIssue群を表示"]
     SetA --> UserSelect["ユーザーがセット選択"]
 
-    UserSelect --> T1["/issue-start #A\n--parallel [--auto]\nworktree A"]
-    UserSelect --> T2["/issue-start #B\n--parallel [--auto]\nworktree B"]
-    UserSelect --> T3["/issue-start #C\n--parallel [--auto]\nworktree C"]
+    UserSelect --> T1["チームメイト A\nworktree A"]
+    UserSelect --> T2["チームメイト B\nworktree B"]
+    UserSelect --> T3["チームメイト C\nworktree C"]
 
-    T1 --> PR1["PR #A"]
-    T2 --> PR2["PR #B"]
-    T3 --> PR3["PR #C"]
+    T1 --> Skill1{"スキル自動選択\n(--no-skills 未指定時)"}
+    T2 --> Skill2{"スキル自動選択\n(--no-skills 未指定時)"}
+    T3 --> Skill3{"スキル自動選択\n(--no-skills 未指定時)"}
+
+    Skill1 -->|"カテゴリ別スキル\nまたは直接実装"| Impl1["スキル実行・実装"]
+    Skill2 -->|"カテゴリ別スキル\nまたは直接実装"| Impl2["スキル実行・実装"]
+    Skill3 -->|"カテゴリ別スキル\nまたは直接実装"| Impl3["スキル実行・実装"]
+
+    Impl1 --> PR1["PR #A"]
+    Impl2 --> PR2["PR #B"]
+    Impl3 --> PR3["PR #C"]
 
     PR1 --> Poll1["polling A"]
     PR2 --> Poll2["polling B"]
