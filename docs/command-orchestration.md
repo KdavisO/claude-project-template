@@ -158,8 +158,8 @@ flowchart TD
     T3 --> Skill3{"スキル自動選択\n(--no-skills 未指定時)"}
 
     Skill1 -->|"カテゴリ別スキル\nまたは直接実装"| Impl1["スキル実行・実装"]
-    Skill2 --> Impl2["スキル実行・実装"]
-    Skill3 --> Impl3["スキル実行・実装"]
+    Skill2 -->|"カテゴリ別スキル\nまたは直接実装"| Impl2["スキル実行・実装"]
+    Skill3 -->|"カテゴリ別スキル\nまたは直接実装"| Impl3["スキル実行・実装"]
 
     Impl1 --> PR1["PR #A"]
     Impl2 --> PR2["PR #B"]

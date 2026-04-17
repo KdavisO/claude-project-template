@@ -119,7 +119,7 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
 なし（--no-skills）
 ```
 
-カテゴリと適用スキルの確定版定義は `.claude/commands/issue-start.md` の「スキルオーケストレーション」セクションを参照する。本コマンドの見込み表示は `/issue-start --auto` の判定カテゴリ表と一致させる（ずれが発生した場合は `/issue-start --auto` 側を単一の真実ソースとする）。
+カテゴリと適用スキルの確定版定義は `.claude/commands/issue-start.md` の「スキルオーケストレーション」セクションを参照する。本コマンドの「適用スキル（見込み）」は提案時点の参考表示であり、`/issue-start --auto` の判定結果との完全一致は保証しない（`/parallel-suggest` は提案時にIssue本文を精読しないため、スコープ判定基準のファイル数（小=1 / 中=2〜5 / 大=6+）と `issue-start.md` 側のカテゴリ目安（小規模=1〜2 / 中規模=3〜5）とで境界が近接しているIssueではカテゴリが入れ替わり得る）。最終的なカテゴリ判定と適用スキルの確定は `/issue-start --auto` 側を単一の真実ソースとする。
 
 ### 6. 実行確認と開始
 
