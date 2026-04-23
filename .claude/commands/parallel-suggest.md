@@ -152,6 +152,9 @@ gh issue list --state open --limit 100 --json number,title,labels,assignees
    - `name`: `issue-{issue番号}`（例: `issue-123`）
    - `team_name`: `parallel-issues`
    - `subagent_type`: `general-purpose`（ファイル編集・Bash実行が必要なため）
+   - `mode`: `"bypassPermissions"`（**必須**）
+     - 理由: チームメイトは最初のツール呼び出し（`git worktree add`, `mkdir`, `Write` 等）で権限承認を要求するが、Agent Teams ではリード側に承認UIが surface せずスタックする既知の問題がある。worktree 内での独立作業は副作用範囲が限定されているため、bypass の副作用は低い
+     - **`.claude/` 保護との関係**: `bypassPermissions` 指定時も、`.claude/` 配下のうち `.claude/commands/`, `.claude/agents/`, `.claude/skills/` 以外のパス（`.claude/settings.json`, `.claude/settings.local.json`, `.claude/rules/` 等）は依然として承認プロンプトが出る（`.claude/rules/claude-dir-protection.md` 参照）。保護対象配下への書き込みが必要なチームメイトには、事前に `permissions.allow` にパススコープ付き許可（例: `Edit(.claude/rules/**)`）を追加しておくこと
    - 手順1で取得したIssue内容をチームメイトへの指示に埋め込む（各チームメイトが個別に `gh issue view` を実行しなくてよいようにする）
    - 下部「チームメイトへの指示テンプレート」の `{no_skills}` プレースホルダに、`/parallel-suggest` 起動時の `--no-skills` フラグ有無に応じて `true` または `false` を埋め込む（`--no-skills` 指定時は全チームメイト一律 `true`）
 4. 各チームメイトの進捗を監視し、実装・PR作成・ポーリング開始の完了報告を待つ
